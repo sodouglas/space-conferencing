@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#video-grid {
+    display: flex;
+    justify-content: center;
+
+}
+
+video {
+    height: 300px;
+    width: 400px;
+    object-fit: cover;
+}
+
+.main {
+    height: 100vh;
+    display: flex;
+}
+
+.main__left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main__videos {
+    flex-grow: 1;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main__controls {
+    display: flex;
+    background-color: purple;
+    color: white;
+    padding: 5px;
+    justify-content: center;
+}
+
+.main__controls__block {
+    display: flex;
+}
+
+.main__controls__button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 8px;
+    min-width: 80px;
+    cursor: pointer;
+}
+
+/* .main__controls__button:not(:last-child) {
+    border-right: 1px solid #ddd;
+} */
+
+.main__controls__button i {
+    font-size: 50px;
+}
+
+.main__controls__button:hover {
+    background-color: #343434;
+    border-radius: 3px;
+}
+
+.unmute {
+    color: red;
+}
+
+.stop {
+    color: red;
+}
