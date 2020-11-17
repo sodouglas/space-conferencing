@@ -129,6 +129,9 @@ const addVideoStream = (video, stream) => {
         video.play();
     })
     videoGrid.append(video);
+    if (videoGrid.childElementCount % 3 == 2){
+        videoGrid.append(document.createElement("br"))
+    }
 }
 
 const muteUnmute = () => {
