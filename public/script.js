@@ -92,7 +92,7 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(audioCtx.destination);
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             addVideoStream(video, userVideoStream);
@@ -108,7 +108,7 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(audioCtx.destination);
             //hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, userVideoStream);
         })
