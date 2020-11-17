@@ -26,6 +26,17 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
+    const addVideoStream = (video, stream) => {
+        video.srcObject = stream;
+        video.addEventListener('loadedmetadata', () => {
+            video.play();
+        })
+        videoGrid.append(video);
+        if (videoGrid.childElementCount % 3 == 2){
+            videoGrid.append(document.createElement("br"))
+        }
+    }
+
     myVideoStream = stream;
     addVideoStream(myVideo, stream);
 
@@ -38,17 +49,6 @@ navigator.mediaDevices.getUserMedia({
             orientationY: oY,
             orientationZ: oZ
         })
-    }
-
-    const addVideoStream = (video, stream) => {
-        video.srcObject = stream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-        })
-        videoGrid.append(video);
-        if (videoGrid.childElementCount % 3 == 2){
-            videoGrid.append(document.createElement("br"))
-        }
     }
 
     const audioCtx = new AudioContext();
@@ -85,6 +85,7 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
+        const hostDestination = audioCtx.createMediaStreamDestination();
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
