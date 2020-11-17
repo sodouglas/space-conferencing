@@ -22,7 +22,7 @@ var peer = new Peer(undefined, {
 })
 
 let myVideoStream;
-let participantCount;
+let participantCount = 0;
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
