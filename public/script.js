@@ -33,10 +33,10 @@ navigator.mediaDevices.getUserMedia({
             video.play();
             video.muted = true;
         })
-        videoGrid.append(video);
+        videoGrid.appendChild(video);
         if (videoGrid.childElementCount % 3 == 2){
             console.log("BR being added")
-            videoGrid.append(document.createElement("br"))
+            videoGrid.appendChild(document.createElement("br"))
         }
     }
 
