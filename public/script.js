@@ -87,6 +87,7 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
+    // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
         // console.log(userId);
         const call = peer.call(userId, stream);
