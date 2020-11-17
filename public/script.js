@@ -46,7 +46,6 @@ navigator.mediaDevices.getUserMedia({
     const panners = [panHardRight, panHardLeft, panHardRight, panHardLeft];
 
     const spatialButton = document.querySelector('.main__spatial_button');
-    console.log("Hi before button listener");
     // Toggle spatial audio
     spatialButton.addEventListener('click', function() {
         const state = document.querySelector('.main__spatial_text').innerHTML;
@@ -73,15 +72,15 @@ navigator.mediaDevices.getUserMedia({
     })
 
     peer.on('call', call => {
-        const hostDestination = audioCtx.createMediaStreamDestination();
-
         call.answer(stream);
         const video = document.createElement('video');
+        const hostDestination = audioCtx.createMediaStreamDestination();
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
+            //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
             hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, hostDestination.stream);
         })
@@ -96,7 +95,7 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
             hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, hostDestination.stream);
         })
