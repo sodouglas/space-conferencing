@@ -92,8 +92,9 @@ navigator.mediaDevices.getUserMedia({
             console.log(userVideoStream);
             let videoTrack = userVideoStream.getVideoTracks()[0];
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
             hostDestination.stream.addTrack(videoTrack);
+            console.log(hostDestination.stream);
             addVideoStream(video, hostDestination.stream);
         })
     })
