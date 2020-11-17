@@ -90,12 +90,11 @@ navigator.mediaDevices.getUserMedia({
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             console.log(userVideoStream);
-            let videoTrack = userVideoStream.getVideoTracks()[0];
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
-            hostDestination.stream.addTrack(videoTrack);
-            console.log(hostDestination.stream);
-            addVideoStream(video, hostDestination.stream);
+            //audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
+            //hostDestination.stream.addTrack(videoTrack);
+            //console.log(hostDestination.stream);
+            addVideoStream(video, userVideoStream);
         })
     })
 
@@ -107,10 +106,10 @@ navigator.mediaDevices.getUserMedia({
         const hostDestination = audioCtx.createMediaStreamDestination();
 
         call.on('stream', userVideoStream => {
-            let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
-            hostDestination.stream.addTrack(videoTrack);
-            addVideoStream(video, hostDestination.stream);
+            //let videoTrack = userVideoStream.getVideoTracks()[0];
+            //audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
+            //hostDestination.stream.addTrack(videoTrack);
+            addVideoStream(video, userVideoStream);
         })
     })
 })
