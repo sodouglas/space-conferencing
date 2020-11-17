@@ -181,6 +181,10 @@ const setStopVideo = () => {
     document.querySelector('.main__video_button').innerHTML = html;
 }
 
+const screenShare = () => {
+    window.alert("This feature has not been implemented in the alpha system")
+}
+
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
     panner.setPosition(pX, pY, pZ);
     panner.setOrientation(oX, oY, oZ);
