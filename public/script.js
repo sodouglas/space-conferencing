@@ -40,6 +40,17 @@ navigator.mediaDevices.getUserMedia({
         })
     }
 
+    const addVideoStream = (video, stream) => {
+        video.srcObject = stream;
+        video.addEventListener('loadedmetadata', () => {
+            video.play();
+        })
+        videoGrid.append(video);
+        if (videoGrid.childElementCount % 3 == 2){
+            videoGrid.append(document.createElement("br"))
+        }
+    }
+
     const audioCtx = new AudioContext();
     const panHardLeft = newPanner(-3,0,-1,3,0,1);
     const panHardRight = newPanner(3,0,1,-3,0,-1);
@@ -74,13 +85,13 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
-        const hostDestination = audioCtx.createMediaStreamDestination();
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
+            console.log(userVideoStream);
             let videoTrack = userVideoStream.getVideoTracks()[0];
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(hostDestination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(audioCtx.destination);
             hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, hostDestination.stream);
         })
@@ -121,17 +132,6 @@ peer.on('open', id => {
 //         addVideoStream(video, hostDestination.stream);
 //     })
 // }
-
-const addVideoStream = (video, stream) => {
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play();
-    })
-    videoGrid.append(video);
-    if (videoGrid.childElementCount % 3 == 2){
-        videoGrid.append(document.createElement("br"))
-    }
-}
 
 const muteUnmute = () => {
     const enabled = myVideoStream.getAudioTracks()[0].enabled;
