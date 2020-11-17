@@ -21,7 +21,8 @@ var peer = new Peer(undefined, {
     port: '443'
 })
 
-let myVideoStream
+let myVideoStream;
+let participantCount;
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -34,6 +35,7 @@ navigator.mediaDevices.getUserMedia({
         })
         videoGrid.append(video);
         if (videoGrid.childElementCount % 3 == 2){
+            console.log("BR being added")
             videoGrid.append(document.createElement("br"))
         }
     }
@@ -92,7 +94,9 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participantCount]).connect(audioCtx.destination);
+            participantCount += 1;
+            console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             addVideoStream(video, userVideoStream);
@@ -108,7 +112,9 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participantCount]).connect(audioCtx.destination);
+            participantCount += 1;
+            console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, userVideoStream);
         })
