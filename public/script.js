@@ -37,26 +37,28 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
-    const addVideoStream = (video, stream) => {
+    const addVideoStream = (video, stream, handIcon) => {
         // Add video stream
         video.srcObject = stream;
         video.addEventListener('loadedmetadata', () => {
             video.play();
             video.muted = true;
         })
+        console.log("Video appended");
         videoGrid.appendChild(video);
-        // Create raised hand icon
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
-        videoGrid.appendChild(div);
+        videoGrid.appendChild(handIcon);
     }
 
+    // Create raised hand icon
+    console.log("Creating child");
+    const divMain = document.createElement('div');
+    divMain.className = "hand-icon";
+    const handIconMain = document.createElement('i');
+    handIconMain.className = "fas fa-hand-paper fa-lg";
+    divMain.appendChild(handIconMain);
+
     myVideoStream = stream;
-    addVideoStream(myVideo, stream);
+    addVideoStream(myVideo, stream, divMain);
 
     const newPanner = (pX, pY, pZ, oX, oY, oZ) => {
         return new PannerNode(audioCtx, {
@@ -111,6 +113,13 @@ navigator.mediaDevices.getUserMedia({
         newPart.video = video;
         participants.push(newPart);
         console.log(participants);
+        // Create raised hand icon
+        console.log("Creating child");
+        const div = document.createElement('div');
+        div.className = "hand-icon";
+        const handIcon = document.createElement('i');
+        handIcon.className = "fas fa-hand-paper fa-lg";
+        div.appendChild(handIcon);
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
@@ -121,12 +130,19 @@ navigator.mediaDevices.getUserMedia({
             console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
-            addVideoStream(video, userVideoStream);
+            addVideoStream(video, userVideoStream, div);
         })
     })
 
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
+        // Create raised hand icon
+        console.log("Creating child");
+        const div = document.createElement('div');
+        div.className = "hand-icon";
+        const handIcon = document.createElement('i');
+        handIcon.className = "fas fa-hand-paper fa-lg";
+        div.appendChild(handIcon);
         // console.log(userId);
         const call = peer.call(userId, stream);
         newPart = new Participant();
@@ -144,7 +160,7 @@ navigator.mediaDevices.getUserMedia({
             participantCount += 1;
             console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
-            addVideoStream(video, userVideoStream);
+            addVideoStream(video, userVideoStream, div);
         });
 
         // dataConn.on('open', () => {
@@ -169,6 +185,7 @@ navigator.mediaDevices.getUserMedia({
 })
 
 peer.on('open', id => {
+    console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
 })
