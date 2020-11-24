@@ -80,6 +80,10 @@ navigator.mediaDevices.getUserMedia({
     const panHardLeft = newPanner(-3,0,-1,3,0,1);
     const panHardRight = newPanner(3,0,1,-3,0,-1);
     const panners = [panHardRight, panHardLeft, panHardRight, panHardLeft];
+    const handAudioElement = document.createElement("audio");
+    handAudioElement.src = "space_notif_final.wav";
+    const handAudioSrc = audioCtx.createMediaElementSource(handAudioElement);
+    handAudioSrc.connect(audioCtx.destination);
 
     const spatialButton = document.querySelector('.main__spatial_button');
     // Toggle spatial audio
@@ -91,7 +95,7 @@ navigator.mediaDevices.getUserMedia({
                 <span class="stop main__spatial_text">3D Off</span>
             `
             panners.forEach((panner) => {
-                setPandO(panner,0,0,3,0,0,1)
+                setPandO(panner,0,0,3,0,0,-1)
             });
             document.querySelector('.main__spatial_button').innerHTML = html;
         } else {
@@ -126,10 +130,8 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[Math.floor(participantCount / 2)]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("On call");
-            participantCount += 1;
-            console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             addVideoStream(video, userVideoStream, newPart.hand);
@@ -154,7 +156,7 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[Math.floor(participantCount / 2)]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             participantCount += 1;
             console.log(participantCount);
@@ -162,23 +164,23 @@ navigator.mediaDevices.getUserMedia({
             addVideoStream(video, userVideoStream, newPart.hand);
         });
 
-        // dataConn.on('open', () => {
-        //     console.log("Connection created");
-        //     dataConn.on('data', data => {
-        //         console.log("Initator recevied ", data);
-        //     })
-        // });
     })
 
-    // peer.on('connection', dataConn => {
-    //     console.log("Connection created");
-    //     dataConn.on('open', () => {
-    //         console.log("Connection open");
-    //         dataConn.on('data', data => {
-    //             console.log("Peer recieved ", data);
-    //         });
-    //     })
-    // })
+    socket.on('hand-event', (userId, handIsRaised) => {
+        console.log(userId, handIsRaised);
+        // console.log(userId);
+        // console.log(participants);
+        const userIndex = participants.findIndex((p) => {return p.id === userId;});
+        // console.log(userIndex);
+        if (userIndex > -1) {
+            // console.log("This person's hand is raised: ", handIsRaised);
+            participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
+            //handAudioSrc.disconnect();
+            //handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
+            handAudioSrc.play();
+        }
+    })
+
 }).catch(err => {
     window.alert("Please make sure you're using HTTPS to access the website, not HTTP!");
 })
@@ -189,17 +191,7 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
-socket.on('hand-event', (userId, handIsRaised) => {
-    console.log(userId, handIsRaised);
-    // console.log(userId);
-    // console.log(participants);
-    const userIndex = participants.findIndex((p) => {return p.id === userId;});
-    // console.log(userIndex);
-    if (userIndex > -1) {
-        console.log("This person's hand is raised: ", handIsRaised);
-        participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
-    }
-})
+
 
 // const connectToNewUser = (userId, stream) => {
 //     // console.log(userId);
