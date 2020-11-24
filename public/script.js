@@ -197,3 +197,7 @@ function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
     panner.setPosition(pX, pY, pZ);
     panner.setOrientation(oX, oY, oZ);
 }
+
+const raiseLowerHand = () => {
+    
+}
