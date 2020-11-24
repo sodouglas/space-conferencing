@@ -105,7 +105,7 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', (userId) => {
         // console.log(userId);
         const call = peer.call(userId, stream);
-        const dataConn = peer.connect(userId);
+        // const dataConn = peer.connect(userId);
         const video = document.createElement('video');
 
         call.on('stream', userVideoStream => {
@@ -118,23 +118,23 @@ navigator.mediaDevices.getUserMedia({
             addVideoStream(video, userVideoStream);
         });
 
-        dataConn.on('open', () => {
-            console.log("Connection created");
-            dataConn.on('data', data => {
-                console.log("Initator recevied ", data);
-            })
-        });
+        // dataConn.on('open', () => {
+        //     console.log("Connection created");
+        //     dataConn.on('data', data => {
+        //         console.log("Initator recevied ", data);
+        //     })
+        // });
     })
 
-    peer.on('connection', dataConn => {
-        console.log("Connection created");
-        dataConn.on('open', () => {
-            console.log("Connection open");
-            dataConn.on('data', data => {
-                console.log("Peer recieved ", data);
-            });
-        })
-    })
+    // peer.on('connection', dataConn => {
+    //     console.log("Connection created");
+    //     dataConn.on('open', () => {
+    //         console.log("Connection open");
+    //         dataConn.on('data', data => {
+    //             console.log("Peer recieved ", data);
+    //         });
+    //     })
+    // })
 })
 
 peer.on('open', id => {
@@ -142,6 +142,9 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
+socket.on('hand-event', (userId, handIsRaised) => {
+    console.log(userId, handIsRaised);
+})
 
 // const connectToNewUser = (userId, stream) => {
 //     // console.log(userId);
@@ -224,6 +227,7 @@ const raiseLowerHand = () => {
         setRaiseHand();
         handRaised = true;
     }
+    socket.emit('hand-event', ROOM_ID, peer.id, handRaised);
 }
 
 const setLowerHand = () => {
