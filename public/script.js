@@ -183,13 +183,13 @@ navigator.mediaDevices.getUserMedia({
 
 }).catch(err => {
     window.alert("Please make sure you're using HTTPS to access the website, not HTTP!");
-})
+});
 
 peer.on('open', id => {
     console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
-})
+});
 
 
 
