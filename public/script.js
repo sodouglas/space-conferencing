@@ -50,6 +50,16 @@ navigator.mediaDevices.getUserMedia({
         videoGrid.appendChild(handIcon);
     }
 
+    const createHandIcon = () => {
+        console.log("Creating child");
+        const div = document.createElement('div');
+        div.className = "hand-icon hide";
+        const handIcon = document.createElement('i');
+        handIcon.className = "fas fa-hand-paper fa-lg";
+        div.appendChild(handIcon);
+        return div;
+    }
+
     // Create raised hand icon
     console.log("Creating child");
     const divMain = document.createElement('div');
@@ -112,15 +122,9 @@ navigator.mediaDevices.getUserMedia({
         const video = document.createElement('video');
 
         newPart.video = video;
-        
+
         // Create raised hand icon
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
-        newPart.hand = div;
+        newPart.hand = createHandIcon();
 
         participants.push(newPart);
         console.log(participants);
@@ -149,13 +153,7 @@ navigator.mediaDevices.getUserMedia({
         newPart.video = video;
         
         // Create raised hand icon
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
-        newPart.hand = div;
+        newPart.hand = createHandIcon();
 
         participants.push(newPart);
         console.log(participants);
