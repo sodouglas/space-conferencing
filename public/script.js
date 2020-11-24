@@ -166,8 +166,10 @@ peer.on('open', id => {
 
 socket.on('hand-event', (userId, handIsRaised) => {
     console.log(userId, handIsRaised);
+    console.log(userId);
     console.log(participants);
-    const userIndex = participants.findIndex((id) => {return id === userId});
+    const userIndex = participants.findIndex((id) => {return id == userId;});
+    console.log(userIndex);
     if (userIndex > -1) {
         console.log("This person's hand is raised: ", handIsRaised);
     }
