@@ -21,9 +21,17 @@ var peer = new Peer(undefined, {
     port: '443'
 })
 
+class Participant {
+    constructor(){
+        this.id = "";
+        this.video = null;
+    }
+}
+
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
+let participants = [];
 
 navigator.mediaDevices.getUserMedia({
     video: true,
@@ -105,8 +113,13 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', (userId) => {
         // console.log(userId);
         const call = peer.call(userId, stream);
+        newPart = new Participant();
+        newPart.id = userId;
         // const dataConn = peer.connect(userId);
         const video = document.createElement('video');
+        newPart.video = video;
+        participants.push(newPart);
+        console.log(participants);
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
@@ -144,6 +157,10 @@ peer.on('open', id => {
 
 socket.on('hand-event', (userId, handIsRaised) => {
     console.log(userId, handIsRaised);
+    const userIndex = participants.findIndex((id) => {return id === userId});
+    if (userIndex > -1) {
+        
+    }
 })
 
 // const connectToNewUser = (userId, stream) => {
