@@ -61,13 +61,7 @@ navigator.mediaDevices.getUserMedia({
     }
 
     // Create raised hand icon
-    console.log("Creating child");
-    const divMain = document.createElement('div');
-    divMain.className = "hand-icon hide";
-    const handIconMain = document.createElement('i');
-    handIconMain.className = "fas fa-hand-paper fa-lg";
-    divMain.appendChild(handIconMain);
-
+    const divMain = createHandIcon();
     myVideoStream = stream;
     addVideoStream(myVideo, stream, divMain);
 
@@ -138,7 +132,7 @@ navigator.mediaDevices.getUserMedia({
             console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
-            addVideoStream(video, userVideoStream, div);
+            addVideoStream(video, userVideoStream, newPart.hand);
         })
     })
 
@@ -165,7 +159,7 @@ navigator.mediaDevices.getUserMedia({
             participantCount += 1;
             console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
-            addVideoStream(video, userVideoStream, div);
+            addVideoStream(video, userVideoStream, newPart.hand);
         });
 
         // dataConn.on('open', () => {
