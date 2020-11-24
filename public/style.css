@@ -76,3 +76,22 @@ video {
 .stop {
     color: black;
 }
+
+.hand-icon {
+    position: relative;
+    left: -45px;
+    top: 5px;
+    color: #fff;
+    border-radius: 100%;
+    background: rgb(0, 119, 255);
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.hand-icon-icon {
+    width: 40px;
+    height: 40px;
+}

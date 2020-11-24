@@ -46,11 +46,13 @@ navigator.mediaDevices.getUserMedia({
         })
         videoGrid.appendChild(video);
         // Create raised hand icon
+        console.log("Creating child");
         const div = document.createElement('div');
+        div.className = "hand-icon";
         const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper";
+        handIcon.className = "fas fa-hand-paper fa-lg";
         div.appendChild(handIcon);
-        videoGrid.appendChild(handIcon);
+        videoGrid.appendChild(div);
     }
 
     myVideoStream = stream;
