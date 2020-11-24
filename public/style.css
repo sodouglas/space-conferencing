@@ -36,7 +36,7 @@ video {
 
 .main__controls {
     display: flex;
-    background-color: purple;
+    background-color: #95e;
     color: white;
     padding: 5px;
     justify-content: center;

@@ -23,6 +23,8 @@ var peer = new Peer(undefined, {
 
 let myVideoStream;
 let participantCount = 0;
+let handRaised = false;
+
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -84,7 +86,6 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
-        const hostDestination = audioCtx.createMediaStreamDestination();
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
@@ -104,8 +105,8 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', (userId) => {
         // console.log(userId);
         const call = peer.call(userId, stream);
+        const dataConn = peer.connect(userId);
         const video = document.createElement('video');
-        const hostDestination = audioCtx.createMediaStreamDestination();
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
@@ -115,6 +116,23 @@ navigator.mediaDevices.getUserMedia({
             console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, userVideoStream);
+        });
+
+        dataConn.on('open', () => {
+            console.log("Connection created");
+            dataConn.on('data', data => {
+                console.log("Initator recevied ", data);
+            })
+        });
+    })
+
+    peer.on('connection', dataConn => {
+        console.log("Connection created");
+        dataConn.on('open', () => {
+            console.log("Connection open");
+            dataConn.on('data', data => {
+                console.log("Peer recieved ", data);
+            });
         })
     })
 })
@@ -199,5 +217,25 @@ function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
 }
 
 const raiseLowerHand = () => {
-    
+    if (handRaised){
+        setLowerHand();
+        handRaised = false;
+    } else {
+        setRaiseHand();
+        handRaised = true;
+    }
+}
+
+const setLowerHand = () => {
+    const html = `
+        <i class="far fa-hand-paper"></i>
+    `
+    document.querySelector('.main__hand_button').innerHTML = html;
+}
+
+const setRaiseHand = () => {
+    const html = `
+        <i class="fas fa-hand-paper"></i>
+    `
+    document.querySelector('.main__hand_button').innerHTML = html;
 }
