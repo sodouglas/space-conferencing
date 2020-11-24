@@ -93,8 +93,15 @@ navigator.mediaDevices.getUserMedia({
 
     peer.on('call', call => {
         call.answer(stream);
+
+        newPart = new Participant();
+        newPart.id = call.peer;
+
         const video = document.createElement('video');
 
+        newPart.video = video;
+        participants.push(newPart);
+        console.log(participants);
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
@@ -148,6 +155,8 @@ navigator.mediaDevices.getUserMedia({
     //         });
     //     })
     // })
+}).catch(err => {
+    window.alert("Please make sure you're using HTTPS to access the website, not HTTP!");
 })
 
 peer.on('open', id => {
