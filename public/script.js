@@ -38,12 +38,19 @@ navigator.mediaDevices.getUserMedia({
     audio: true
 }).then(stream => {
     const addVideoStream = (video, stream) => {
+        // Add video stream
         video.srcObject = stream;
         video.addEventListener('loadedmetadata', () => {
             video.play();
             video.muted = true;
         })
         videoGrid.appendChild(video);
+        // Create raised hand icon
+        const div = document.createElement('div');
+        const handIcon = document.createElement('i');
+        handIcon.className = "fas fa-hand-paper";
+        div.appendChild(handIcon);
+        videoGrid.appendChild(handIcon);
     }
 
     myVideoStream = stream;
@@ -172,6 +179,7 @@ socket.on('hand-event', (userId, handIsRaised) => {
     // console.log(userIndex);
     if (userIndex > -1) {
         console.log("This person's hand is raised: ", handIsRaised);
+
     }
 })
 

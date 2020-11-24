@@ -6,7 +6,7 @@ body {
 #video-grid {
     display: grid;
     justify-content: center;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto auto;
 }
 
 video {
