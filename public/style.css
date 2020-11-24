@@ -91,7 +91,6 @@ video {
     display: flex;
 }
 
-.hand-icon-icon {
-    width: 40px;
-    height: 40px;
+.hide {
+    display: none;
 }

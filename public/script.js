@@ -25,6 +25,7 @@ class Participant {
     constructor(){
         this.id = "";
         this.video = null;
+        this.hand = null;
     }
 }
 
@@ -52,7 +53,7 @@ navigator.mediaDevices.getUserMedia({
     // Create raised hand icon
     console.log("Creating child");
     const divMain = document.createElement('div');
-    divMain.className = "hand-icon";
+    divMain.className = "hand-icon hide";
     const handIconMain = document.createElement('i');
     handIconMain.className = "fas fa-hand-paper fa-lg";
     divMain.appendChild(handIconMain);
@@ -111,8 +112,7 @@ navigator.mediaDevices.getUserMedia({
         const video = document.createElement('video');
 
         newPart.video = video;
-        participants.push(newPart);
-        console.log(participants);
+        
         // Create raised hand icon
         console.log("Creating child");
         const div = document.createElement('div');
@@ -120,6 +120,10 @@ navigator.mediaDevices.getUserMedia({
         const handIcon = document.createElement('i');
         handIcon.className = "fas fa-hand-paper fa-lg";
         div.appendChild(handIcon);
+        newPart.hand = div;
+
+        participants.push(newPart);
+        console.log(participants);
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
@@ -136,13 +140,6 @@ navigator.mediaDevices.getUserMedia({
 
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
-        // Create raised hand icon
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
         // console.log(userId);
         const call = peer.call(userId, stream);
         newPart = new Participant();
@@ -150,6 +147,16 @@ navigator.mediaDevices.getUserMedia({
         // const dataConn = peer.connect(userId);
         const video = document.createElement('video');
         newPart.video = video;
+        
+        // Create raised hand icon
+        console.log("Creating child");
+        const div = document.createElement('div');
+        div.className = "hand-icon";
+        const handIcon = document.createElement('i');
+        handIcon.className = "fas fa-hand-paper fa-lg";
+        div.appendChild(handIcon);
+        newPart.hand = div;
+
         participants.push(newPart);
         console.log(participants);
 
@@ -198,7 +205,7 @@ socket.on('hand-event', (userId, handIsRaised) => {
     // console.log(userIndex);
     if (userIndex > -1) {
         console.log("This person's hand is raised: ", handIsRaised);
-
+        participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
     }
 })
 
