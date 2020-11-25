@@ -172,12 +172,20 @@ navigator.mediaDevices.getUserMedia({
         const userIndex = participants.findIndex((p) => {return p.id === userId;});
         // console.log(userIndex);
         if (userIndex > -1) {
-            // console.log("This person's hand is raised: ", handIsRaised);
-            participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
-            handAudioSrc.disconnect();
-            handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
-            handAudioElement.load();
-            handAudioElement.play();
+            if (handIsRaised){
+                handAudioSrc.disconnect();
+                participants[userIndex].hand.className = "hand-icon";
+                const state = document.querySelector('.main__spatial_text').innerHTML;
+                if (state === "3D On") {
+                    handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
+                } else {
+                    handAudioSrc.connect(audioCtx.destination);
+                }
+                handAudioElement.load();
+                handAudioElement.play();
+            } else {
+                participants[userIndex].hand.className = "hand-icon hide";
+            }
         }
     });
 
