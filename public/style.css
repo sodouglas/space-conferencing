@@ -6,7 +6,7 @@ body {
 #video-grid {
     display: grid;
     justify-content: center;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto auto;
 }
 
 video {
@@ -36,7 +36,7 @@ video {
 
 .main__controls {
     display: flex;
-    background-color: purple;
+    background-color: rgb(83, 32, 179);
     color: white;
     padding: 5px;
     justify-content: center;
@@ -69,10 +69,33 @@ video {
     border-radius: 3px;
 }
 
+.main__leave_button {
+    background: rgb(212, 32, 32);
+    border-radius: 3px;
+}
+
 .unmute {
     color: black;
 }
 
 .stop {
     color: black;
+}
+
+.hand-icon {
+    position: relative;
+    left: -45px;
+    top: 5px;
+    color: #fff;
+    border-radius: 100%;
+    background: rgb(0, 119, 255);
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
+.hide {
+    display: none;
 }

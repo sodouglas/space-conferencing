@@ -25,6 +25,11 @@ io.on('connection', socket => {
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('user-connected', userId);
     })
+
+    socket.on('hand-event', (roomId, userId, handIsRaised) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('hand-event', userId, handIsRaised);
+    });
 })
 
 server.listen(process.env.PORT || 3030);
