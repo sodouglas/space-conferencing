@@ -97,7 +97,7 @@ navigator.mediaDevices.getUserMedia({
             setPandO(panners[2],3,0,1,-3,0,-1);
             document.querySelector('.main__spatial_button').innerHTML = html;
         }
-    });
+    })
 
     peer.on('call', call => {
         call.answer(stream);
@@ -126,8 +126,8 @@ navigator.mediaDevices.getUserMedia({
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             addVideoStream(video, userVideoStream, newPart.hand);
-        });
-    });
+        })
+    })
 
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
@@ -152,9 +152,9 @@ navigator.mediaDevices.getUserMedia({
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, userVideoStream, newPart.hand);
-        });
+        })
 
-    });
+    })
 
     socket.on('hand-event', (userId, handIsRaised) => {
         console.log(userId, handIsRaised);
@@ -178,17 +178,15 @@ navigator.mediaDevices.getUserMedia({
                 participants[userIndex].hand.className = "hand-icon hide";
             }
         }
-    });
+    })
 
-}).catch(err => {
-    window.alert("Please make sure you're using HTTPS to access the website, not HTTP!");
-});
+})
 
 peer.on('open', id => {
     console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
-});
+})
 
 // const connectToNewUser = (userId, stream) => {
 //     // console.log(userId);
