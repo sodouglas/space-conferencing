@@ -83,7 +83,6 @@ navigator.mediaDevices.getUserMedia({
     const handAudioElement = document.createElement("audio");
     handAudioElement.src = "space_notif_final.wav";
     const handAudioSrc = audioCtx.createMediaElementSource(handAudioElement);
-    handAudioSrc.connect(audioCtx.destination);
 
     const spatialButton = document.querySelector('.main__spatial_button');
     // Toggle spatial audio
@@ -175,8 +174,8 @@ navigator.mediaDevices.getUserMedia({
         if (userIndex > -1) {
             // console.log("This person's hand is raised: ", handIsRaised);
             participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
-            //handAudioSrc.disconnect();
-            //handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
+            handAudioSrc.disconnect();
+            handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
             handAudioElement.load();
             handAudioElement.play();
         }
