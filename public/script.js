@@ -119,7 +119,8 @@ navigator.mediaDevices.getUserMedia({
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
             console.log(participants);
-            console.log(participants.length);
+            console.log("Participants length:", participants.length);
+            console.log(panners);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
@@ -149,8 +150,6 @@ navigator.mediaDevices.getUserMedia({
             console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
-            participantCount += 1;
-            console.log(participantCount);
             //hostDestination.stream.addTrack(videoTrack);
             addVideoStream(video, userVideoStream, newPart.hand);
         });
