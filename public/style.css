@@ -36,7 +36,7 @@ video {
 
 .main__controls {
     display: flex;
-    background-color: #95e;
+    background-color: rgb(83, 32, 179);
     color: white;
     padding: 5px;
     justify-content: center;
@@ -66,6 +66,11 @@ video {
 
 .main__controls__button:hover {
     background-color: #343434;
+    border-radius: 3px;
+}
+
+.main__leave_button {
+    background: rgb(212, 32, 32);
     border-radius: 3px;
 }
 

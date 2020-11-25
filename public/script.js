@@ -112,15 +112,13 @@ navigator.mediaDevices.getUserMedia({
         // Create raised hand icon
         newPart.hand = createHandIcon();
 
+        // Add new participant to the array
         participants.push(newPart);
-        console.log(participants);
+
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            console.log(participants);
-            console.log("Participants length:", participants.length);
-            console.log(panners);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
@@ -143,7 +141,6 @@ navigator.mediaDevices.getUserMedia({
         newPart.hand = createHandIcon();
 
         participants.push(newPart);
-        console.log(participants);
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
@@ -215,14 +212,14 @@ const muteUnmute = () => {
 
 const setMuteButton = () => {
     const html = `
-        <i class="fas fa-microphone"></i>
+        <i class="fas fa-microphone fa-lg"></i>
     `
     document.querySelector('.main__mute_button').innerHTML = html;
 }
 
 const setUnmuteButton = () => {
     const html = `
-        <i class="unmute fas fa-microphone-slash"></i>
+        <i class="unmute fas fa-microphone-slash fa-lg"></i>
     `
     document.querySelector('.main__mute_button').innerHTML = html;
 }
@@ -240,14 +237,14 @@ const playStop = () => {
 
 const setPlayVideo = () => {
     const html = `
-        <i class="fas fa-video"></i>
+        <i class="fas fa-video fa-lg"></i>
     `
     document.querySelector('.main__video_button').innerHTML = html;
 }
 
 const setStopVideo = () => {
     const html = `
-        <i class="stop fas fa-video-slash"></i>
+        <i class="stop fas fa-video-slash fa-lg"></i>
     `
     document.querySelector('.main__video_button').innerHTML = html;
 }
@@ -274,14 +271,14 @@ const raiseLowerHand = () => {
 
 const setLowerHand = () => {
     const html = `
-        <i class="far fa-hand-paper"></i>
+        <i class="far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
 }
 
 const setRaiseHand = () => {
     const html = `
-        <i class="fas fa-hand-paper"></i>
+        <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
 }
