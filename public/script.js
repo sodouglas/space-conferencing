@@ -4,17 +4,6 @@ console.log(videoGrid);
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 
-function newPanner(pX, pY, pZ, oX, oY, oZ) {
-    return new PannerNode(audioCtx, {
-        positionX: pX,
-        positionY: pY,
-        positionZ: pZ,
-        orientationX: oX,
-        orientationY: oY,
-        orientationZ: oZ
-    })
-}
-
 var peer = new Peer(undefined, {
     path: '/peerjs',
     host: '/',  // localhost or heroku
@@ -73,7 +62,7 @@ navigator.mediaDevices.getUserMedia({
             orientationX: oX,
             orientationY: oY,
             orientationZ: oZ
-        });
+        })
     }
 
     const audioCtx = new AudioContext();
@@ -129,6 +118,8 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
+            console.log(participants);
+            console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
@@ -155,6 +146,7 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
+            console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             participantCount += 1;
