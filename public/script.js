@@ -177,7 +177,8 @@ navigator.mediaDevices.getUserMedia({
             participants[userIndex].hand.className = handIsRaised ? "hand-icon" : "hand-icon hide";
             //handAudioSrc.disconnect();
             //handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
-            handAudioSrc.play();
+            handAudioElement.load();
+            handAudioElement.play();
         }
     })
 
