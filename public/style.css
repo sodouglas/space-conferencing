@@ -62,7 +62,7 @@ body {
 
 .main__controls {
     display: flex;
-    background-color: rgb(83, 32, 179);
+    background-color: rgb(103, 60, 153);
     color: white;
     padding: 5px;
     justify-content: center;
@@ -115,9 +115,9 @@ body {
     color: #fff;
     border-radius: 100%;
     background: rgb(0, 119, 255);
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
+    width: 9%;
+    min-width: 20px;
+    height: 12%;
     justify-content: center;
     align-items: center;
     display: flex;

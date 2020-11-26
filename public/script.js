@@ -18,7 +18,7 @@ class Participant {
     }
 }
 
-const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom right'];
+const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
@@ -31,11 +31,9 @@ navigator.mediaDevices.getUserMedia({
     const addVideoStream = (position, stream) => {
         const newVideo = document.getElementById(position + "-video");
         const newImage = document.getElementById(position + "-image");
-        const newHand = document.getElementById(position + "-hand")
         // Remove image and show video
         newVideo.style.display = "flex";
         newImage.style.display = "none";
-        newHand.className = "hand-icon";
         // Add video stream
         newVideo.srcObject = stream;
         newVideo.addEventListener('loadedmetadata', () => {
@@ -125,7 +123,7 @@ navigator.mediaDevices.getUserMedia({
         newPart.video = document.getElementById(position + "-video");
 
         // Create raised hand icon
-        newPart.hand = createHandIcon();
+        newPart.hand = document.getElementById(position + "-hand");
 
         // Add new participant to the array
         participants.push(newPart);
@@ -155,8 +153,8 @@ navigator.mediaDevices.getUserMedia({
         let position = videoPositions[participants.length];
         newPart.video = document.getElementById(position + "-video");
         
-        // Create raised hand icon
-        newPart.hand = createHandIcon();
+        // Assign raised hand icon
+        newPart.hand = document.getElementById(position + "-hand");
 
         participants.push(newPart);
 
@@ -181,7 +179,7 @@ navigator.mediaDevices.getUserMedia({
         if (userIndex > -1) {
             if (handIsRaised){
                 handAudioSrc.disconnect();
-                participants[userIndex].hand.className = "hand-icon";
+                participants[userIndex].hand.style.display = "flex";
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -191,7 +189,7 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
-                participants[userIndex].hand.className = "hand-icon hide";
+                participants[userIndex].hand.style.display = "none";
             }
         }
     })
