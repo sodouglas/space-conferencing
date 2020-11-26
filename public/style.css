@@ -15,7 +15,7 @@ body {
 } */
 
 .feed {
-    width: 350px;
+    width: 25%;
 }
 
 .top-edge {
@@ -28,7 +28,7 @@ body {
 }
 
 .bottom-center {
-    width: 250px;
+    width: 15%;
 }
 
 .bottom-right {
