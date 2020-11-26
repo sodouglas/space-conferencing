@@ -28,12 +28,14 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
-    const addVideoStream = (position, stream, handIcon) => {
+    const addVideoStream = (position, stream) => {
         const newVideo = document.getElementById(position + "-video");
         const newImage = document.getElementById(position + "-image");
+        const newHand = document.getElementById(position + "-hand")
         // Remove image and show video
         newVideo.style.display = "flex";
         newImage.style.display = "none";
+        newHand.className = "hand-icon";
         // Add video stream
         newVideo.srcObject = stream;
         newVideo.addEventListener('loadedmetadata', () => {
@@ -45,20 +47,20 @@ navigator.mediaDevices.getUserMedia({
         // videoGrid.appendChild(handIcon);
     }
 
-    const createHandIcon = () => {
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon hide";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
-        return div;
-    }
+    // const createHandIcon = () => {
+    //     console.log("Creating child");
+    //     const div = document.createElement('div');
+    //     div.className = "hand-icon hide";
+    //     const handIcon = document.createElement('i');
+    //     handIcon.className = "fas fa-hand-paper fa-lg";
+    //     div.appendChild(handIcon);
+    //     return div;
+    // }
 
     // Create raised hand icon
-    const divMain = createHandIcon();
+    // const divMain = createHandIcon();
     myVideoStream = stream;
-    addVideoStream('bottom-center', stream, divMain);
+    addVideoStream('bottom-center', stream);
 
     const newPanner = (pX, pY, pZ, oX, oY, oZ) => {
         return new PannerNode(audioCtx, {
@@ -136,7 +138,8 @@ navigator.mediaDevices.getUserMedia({
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
-            addVideoStream(position, userVideoStream, newPart.hand);
+            // addVideoStream(position, userVideoStream, newPart.hand);
+            addVideoStream(position, userVideoStream);
         })
     })
 
@@ -163,7 +166,8 @@ navigator.mediaDevices.getUserMedia({
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
-            addVideoStream(position, userVideoStream, newPart.hand);
+            // addVideoStream(position, userVideoStream, newPart.hand);
+            addVideoStream(position, userVideoStream);
         })
 
     })
