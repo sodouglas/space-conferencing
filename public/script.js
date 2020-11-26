@@ -1,8 +1,8 @@
 const socket = io('/');
-const videoGrid = document.getElementById('video-grid');
-console.log(videoGrid);
-const myVideo = document.createElement('video');
-myVideo.muted = true;
+// const videoGrid = document.getElementById('video-grid');
+// console.log(videoGrid);
+// const myVideo = document.createElement('video');
+// myVideo.muted = true;
 
 var peer = new Peer(undefined, {
     path: '/peerjs',
@@ -52,7 +52,7 @@ navigator.mediaDevices.getUserMedia({
     // Create raised hand icon
     const divMain = createHandIcon();
     myVideoStream = stream;
-    addVideoStream(myVideo, stream, divMain);
+    //addVideoStream(myVideo, stream, divMain);
 
     const newPanner = (pX, pY, pZ, oX, oY, oZ) => {
         return new PannerNode(audioCtx, {
