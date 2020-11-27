@@ -1,4 +1,4 @@
-const socket = io('/');
+const socket = io('/room');
 // const videoGrid = document.getElementById('video-grid');
 // console.log(videoGrid);
 // const myVideo = document.createElement('video');
@@ -333,4 +333,10 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+}
+
+const leaveMeeting = () => {
+    if (confirm("Are you sure you want to leave the meeting?")){
+        window.location.href = '/thank-you'
+    }
 }

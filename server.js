@@ -13,11 +13,15 @@ app.use(express.static('public'));
 
 app.use('/peerjs', peerServer);
 app.get('/', (req, res) => {
-    res.redirect(`/${uuidv4()}`); 
+    res.redirect(`/room/${uuidv4()}`);
 })
 
-app.get('/:room', (req, res) => {
+app.get('/room/:room', (req, res) => {
     res.render('room', { roomId: req.params.room });
+})
+
+app.get('/thank-you', (req, res) => {
+    res.render('thank-you');
 })
 
 io.on('connection', socket => {
