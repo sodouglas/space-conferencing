@@ -201,29 +201,11 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
-// window.onbeforeunload = () => {
-//     console.log("Bye bye");
-//     socket.emit('leave-room', ROOM_ID, peer.id);
-// }
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 window.addEventListener("beforeunload", function(event) {
     console.log("Bye bye");
     socket.emit('leave-room', ROOM_ID, peer.id);
     return;
 })
-
-// window.onunload = () => {
-//     console.log("Bye bye");
-//     socket.emit('leave-room', ROOM_ID, peer.id);
-// }
-
-// peer.on('close', id => {
-//     console.log("Discotheque");
-// })
 
 socket.on('user-disconnected', userId => {
     console.log("See ya");
