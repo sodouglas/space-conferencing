@@ -202,10 +202,15 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
-window.onbeforeunload = () => {
+// window.onbeforeunload = () => {
+//     console.log("Bye bye");
+//     socket.emit('leave-room', ROOM_ID, peer.id);
+// }
+
+window.addEventListener("beforeunload", event => {
     console.log("Bye bye");
     socket.emit('leave-room', ROOM_ID, peer.id);
-}
+});
 
 // window.onunload = () => {
 //     console.log("Bye bye");
