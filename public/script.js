@@ -209,7 +209,7 @@ window.onbeforeunload = (userId) => {
 
 socket.on('user-disconnected', userId => {
     console.log("See ya");
-    const userIndex = participants.findIndex((p => { return p.id === userId; }))
+    const userIndex = participants.findIndex((p) => { return p.id === userId; });
     if (userIndex > -1) {
         console.log("Before splice");
         console.log(participants);
