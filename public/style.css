@@ -2,17 +2,46 @@ body {
     margin: 0;
     padding: 0;
 }
-
+/* 
 #video-grid {
     display: grid;
     justify-content: center;
     grid-template-columns: auto auto auto auto;
-}
+} */
 
-video {
-    height: 300px;
+/* video {
     width: 400px;
     object-fit: cover;
+} */
+
+.feed {
+    width: 80%;
+    min-width: 250px;
+}
+
+.full-feed{
+    width: 30%;
+    justify-content: center;
+    display: flex;
+    transform: translate(0,0);
+}
+
+.top-edge {
+    position: relative;
+    top: 4vh;
+}
+
+.bottom-left{
+    position: relative;
+}
+
+.bottom-center {
+    width: 60%;
+    min-width: 200px;
+}
+
+.bottom-right {
+    position: relative;
 }
 
 .main {
@@ -30,16 +59,16 @@ video {
     flex-grow: 1;
     background-color: black;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
 }
 
 .main__controls {
     display: flex;
-    background-color: rgb(83, 32, 179);
+    background-color: rgb(103, 60, 153);
     color: white;
     padding: 5px;
     justify-content: center;
+    height: 8vh;
 }
 
 .main__controls__block {
@@ -83,19 +112,41 @@ video {
 }
 
 .hand-icon {
-    position: relative;
-    left: -45px;
-    top: 5px;
+    position: absolute;
+    right: 5vw;
     color: #fff;
     border-radius: 100%;
     background: rgb(0, 119, 255);
     width: 40px;
+    min-width: 30px;
     height: 40px;
+    min-height: 30px;
     justify-content: center;
     align-items: center;
     display: flex;
 }
 
+.icon-high {
+    top: 85px;
+}
+
+.icon-low {
+    top: 55px;
+}
+
 .hide {
     display: none;
+}
+
+.video-row {
+    display: flex;
+    height: 45vh;
+}
+
+.top-row{
+    justify-content: space-evenly;
+}
+
+.bottom-row{
+    justify-content: space-between;
 }

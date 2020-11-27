@@ -1,8 +1,8 @@
 const socket = io('/');
-const videoGrid = document.getElementById('video-grid');
-console.log(videoGrid);
-const myVideo = document.createElement('video');
-myVideo.muted = true;
+// const videoGrid = document.getElementById('video-grid');
+// console.log(videoGrid);
+// const myVideo = document.createElement('video');
+// myVideo.muted = true;
 
 var peer = new Peer(undefined, {
     path: '/peerjs',
@@ -18,6 +18,7 @@ class Participant {
     }
 }
 
+const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
@@ -27,32 +28,37 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
-    const addVideoStream = (video, stream, handIcon) => {
+    const addVideoStream = (position, stream) => {
+        const newVideo = document.getElementById(position + "-video");
+        const newImage = document.getElementById(position + "-image");
+        // Remove image and show video
+        newVideo.style.display = "flex";
+        newImage.style.display = "none";
         // Add video stream
-        video.srcObject = stream;
-        video.addEventListener('loadedmetadata', () => {
-            video.play();
-            video.muted = true;
+        newVideo.srcObject = stream;
+        newVideo.addEventListener('loadedmetadata', () => {
+            newVideo.play();
+            newVideo.muted = true;
         })
         console.log("Video appended");
-        videoGrid.appendChild(video);
-        videoGrid.appendChild(handIcon);
+        // videoGrid.appendChild(video);
+        // videoGrid.appendChild(handIcon);
     }
 
-    const createHandIcon = () => {
-        console.log("Creating child");
-        const div = document.createElement('div');
-        div.className = "hand-icon hide";
-        const handIcon = document.createElement('i');
-        handIcon.className = "fas fa-hand-paper fa-lg";
-        div.appendChild(handIcon);
-        return div;
-    }
+    // const createHandIcon = () => {
+    //     console.log("Creating child");
+    //     const div = document.createElement('div');
+    //     div.className = "hand-icon hide";
+    //     const handIcon = document.createElement('i');
+    //     handIcon.className = "fas fa-hand-paper fa-lg";
+    //     div.appendChild(handIcon);
+    //     return div;
+    // }
 
     // Create raised hand icon
-    const divMain = createHandIcon();
+    // const divMain = createHandIcon();
     myVideoStream = stream;
-    addVideoStream(myVideo, stream, divMain);
+    addVideoStream('bottom-center', stream);
 
     const newPanner = (pX, pY, pZ, oX, oY, oZ) => {
         return new PannerNode(audioCtx, {
@@ -66,9 +72,13 @@ navigator.mediaDevices.getUserMedia({
     }
 
     const audioCtx = new AudioContext();
-    const panHardLeft = newPanner(-3,0,-1,3,0,1);
-    const panHardRight = newPanner(3,0,1,-3,0,-1);
-    const panners = [panHardRight, panHardLeft, panHardRight, panHardLeft];
+    const panners = [
+        newPanner(0,0,-3,0,0,1),    // center
+        newPanner(-1,0,-2,1,0,-2),  // soft left
+        newPanner(1,0,-2,-1,0,2),   // soft right
+        newPanner(-3,0,-1,3,0,1),   // hard left
+        newPanner(3,0,1,-3,0,-1)    // hard right
+    ];
     const handAudioElement = document.createElement("audio");
     handAudioElement.src = "space_notif_final.wav";
     const handAudioSrc = audioCtx.createMediaElementSource(handAudioElement);
@@ -83,7 +93,7 @@ navigator.mediaDevices.getUserMedia({
                 <span class="stop main__spatial_text">3D Off</span>
             `
             panners.forEach((panner) => {
-                setPandO(panner,0,0,3,0,0,-1)
+                setPandO(panner,0,0,-3,0,0,1)
             });
             document.querySelector('.main__spatial_button').innerHTML = html;
         } else {
@@ -91,10 +101,11 @@ navigator.mediaDevices.getUserMedia({
                 <i class="fas fa-assistive-listening-systems"></i>
                 <span class="main__spatial_text">3D On</span>
             `
-            setPandO(panners[1],-3,0,-1,3,0,1);
-            setPandO(panners[3],-3,0,-1,3,0,1);
-            setPandO(panners[0],3,0,1,-3,0,-1);
-            setPandO(panners[2],3,0,1,-3,0,-1);
+            setPandO(panners[0],0,0,-3,0,0,1),    // center
+            setPandO(panners[1],-1,0,-2,1,0,-2),  // soft left
+            setPandO(panners[2],1,0,-2,-1,0,2),   // soft right
+            setPandO(panners[3],-3,0,-1,3,0,1),   // hard left
+            setPandO(panners[4],3,0,1,-3,0,-1)    // hard right
             document.querySelector('.main__spatial_button').innerHTML = html;
         }
     })
@@ -102,15 +113,17 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         call.answer(stream);
 
-        newPart = new Participant();
+        let newPart = new Participant();
         newPart.id = call.peer;
 
-        const video = document.createElement('video');
+        // const video = document.createElement('video');
+        // newPart.video = video;
 
-        newPart.video = video;
+        let position = videoPositions[participants.length];
+        newPart.video = document.getElementById(position + "-video");
 
         // Create raised hand icon
-        newPart.hand = createHandIcon();
+        newPart.hand = document.getElementById(position + "-hand");
 
         // Add new participant to the array
         participants.push(newPart);
@@ -123,7 +136,8 @@ navigator.mediaDevices.getUserMedia({
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
-            addVideoStream(video, userVideoStream, newPart.hand);
+            // addVideoStream(position, userVideoStream, newPart.hand);
+            addVideoStream(position, userVideoStream);
         })
     })
 
@@ -134,11 +148,13 @@ navigator.mediaDevices.getUserMedia({
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
-        const video = document.createElement('video');
-        newPart.video = video;
+        // const video = document.createElement('video');
+        // newPart.video = video;
+        let position = videoPositions[participants.length];
+        newPart.video = document.getElementById(position + "-video");
         
-        // Create raised hand icon
-        newPart.hand = createHandIcon();
+        // Assign raised hand icon
+        newPart.hand = document.getElementById(position + "-hand");
 
         participants.push(newPart);
 
@@ -148,7 +164,8 @@ navigator.mediaDevices.getUserMedia({
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
-            addVideoStream(video, userVideoStream, newPart.hand);
+            // addVideoStream(position, userVideoStream, newPart.hand);
+            addVideoStream(position, userVideoStream);
         })
 
     })
@@ -162,7 +179,7 @@ navigator.mediaDevices.getUserMedia({
         if (userIndex > -1) {
             if (handIsRaised){
                 handAudioSrc.disconnect();
-                participants[userIndex].hand.className = "hand-icon";
+                participants[userIndex].hand.style.display = "flex";
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -172,7 +189,7 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
-                participants[userIndex].hand.className = "hand-icon hide";
+                participants[userIndex].hand.style.display = "none";
             }
         }
     })
@@ -183,6 +200,15 @@ peer.on('open', id => {
     console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
+})
+
+window.onbeforeunload = (id) => {
+    console.log("Bye bye");
+    socket.emit('leave-room', ROOM_ID, id);
+}
+
+socket.on('user-disconnected', id => {
+    console.log("See ya");
 })
 
 // const connectToNewUser = (userId, stream) => {
