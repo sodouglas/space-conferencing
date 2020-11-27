@@ -220,20 +220,20 @@ socket.on('user-disconnected', userId => {
         participants.splice(userIndex, 1);
         console.log("After splice");
         console.log(participants);
-        // for (i = userIndex; i < participants.length; i++) {
-        //     // For the videoPositions array, i + 1 is the old location and i is the new location
-        //     // Hide existing video
-        //     participants[i].video.style.display = "none";
-        //     document.getElementById(videoPositions[i + 1] + '-image').style.display = "none";
-        //     // Move old video stream to new video location
-        //     document.getElementById(videoPositions[i] + '-image').style.display = "none";
-        //     let newVideo = document.getElementById(videoPositions[i] + '-video');
-        //     newVideo.style.display = "flex";
-        //     newVideo.srcObject = participants[i].video.srcObject;
-        //     // Associate new video location to participant
-        //     participants[i].video = newVideo;
-        //     participants[i].hand = document.getElementById(videoPositions[i] + '-hand');
-        // }
+        for (i = userIndex; i < participants.length; i++) {
+            // For the videoPositions array, i + 1 is the old location and i is the new location
+            // Hide existing video
+            participants[i].video.style.display = "none";
+            document.getElementById(videoPositions[i + 1] + '-image').style.display = "none";
+            // Move old video stream to new video location
+            document.getElementById(videoPositions[i] + '-image').style.display = "none";
+            let newVideo = document.getElementById(videoPositions[i] + '-video');
+            newVideo.style.display = "flex";
+            newVideo.srcObject = participants[i].video.srcObject;
+            // Associate new video location to participant
+            participants[i].video = newVideo;
+            participants[i].hand = document.getElementById(videoPositions[i] + '-hand');
+        }
     }
 })
 
