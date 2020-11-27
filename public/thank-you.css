@@ -1,0 +1,28 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.background {
+    background: rgb(29, 29, 29);
+    font-family: Tahoma, Geneva, sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background: rgb(255, 255, 255);
+    height: 20vh;
+    min-height: 100px;
+    width: 45vw;
+    min-width: 350px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    font-size: 30px;
+    text-align: center;
+    flex-direction: column;
+}
