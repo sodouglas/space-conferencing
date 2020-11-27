@@ -224,9 +224,9 @@ socket.on('user-disconnected', userId => {
             // For the videoPositions array, i + 1 is the old location and i is the new location
             // Hide existing video
             participants[i].video.style.display = "none";
-            document.getElementById(videoPositions[i + 1] + '-image').style.display = "none";
+            document.getElementById(videoPositions[i + 1] + '-image').style.display = "flex";
             // Move old video stream to new video location
-            document.getElementById(videoPositions[i] + '-image').style.display = "flex";
+            document.getElementById(videoPositions[i] + '-image').style.display = "none";
             let newVideo = document.getElementById(videoPositions[i] + '-video');
             newVideo.style.display = "flex";
             newVideo.srcObject = participants[i].video.srcObject;
