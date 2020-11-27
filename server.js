@@ -30,6 +30,11 @@ io.on('connection', socket => {
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('hand-event', userId, handIsRaised);
     });
+
+    socket.on('leave-room', (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('user-disconnected', userId);
+    })
 })
 
 server.listen(process.env.PORT || 3030);
