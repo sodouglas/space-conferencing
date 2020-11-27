@@ -202,6 +202,10 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
+peer.on('disconnect', id => {
+    console.log("Bye bye");
+})
+
 // const connectToNewUser = (userId, stream) => {
 //     // console.log(userId);
 //     const call = peer.call(userId, stream);
