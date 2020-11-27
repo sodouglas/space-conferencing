@@ -208,7 +208,7 @@ peer.on('open', id => {
 // }
 
 window.addEventListener("beforeunload", function(event) {
-    if (confirm('Are you sure you want to leave the meeting?')) {
+    if (window.confirm('Are you sure you want to leave the meeting?')) {
         console.log("Bye bye");
         socket.emit('leave-room', ROOM_ID, peer.id);
         event.returnValue = 'true';
