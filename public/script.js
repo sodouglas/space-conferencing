@@ -207,9 +207,17 @@ peer.on('open', id => {
 //     socket.emit('leave-room', ROOM_ID, peer.id);
 // }
 
-window.addEventListener("beforeunload", event => {
-    console.log("Bye bye");
-    socket.emit('leave-room', ROOM_ID, peer.id);
+window.addEventListener("beforeunload", function(event) {
+    if (confirm('Are you sure you want to leave the meeting?')) {
+        console.log("Bye bye");
+        socket.emit('leave-room', ROOM_ID, peer.id);
+        event.returnValue = 'true';
+        return true;
+    } else {
+        console.log("Sticking around");
+        event.returnValue = 'false';
+        return false;
+    }
 });
 
 // window.onunload = () => {
