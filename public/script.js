@@ -207,7 +207,7 @@ window.onbeforeunload = (id) => {
     socket.emit('leave-room', ROOM_ID, id);
 }
 
-peer.on('user-disconnected', id => {
+socket.on('user-disconnected', id => {
     console.log("See ya");
 })
 
