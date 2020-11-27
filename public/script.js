@@ -207,9 +207,14 @@ peer.on('open', id => {
 //     socket.emit('leave-room', ROOM_ID, peer.id);
 // }
 
-peer.on('close', id => {
-    console.log("Discotheque");
-})
+window.onunload = () => {
+    console.log("Bye bye");
+    socket.emit('leave-room', ROOM_ID, peer.id);
+}
+
+// peer.on('close', id => {
+//     console.log("Discotheque");
+// })
 
 socket.on('user-disconnected', userId => {
     console.log("See ya");
