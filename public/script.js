@@ -193,7 +193,6 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
-
 })
 
 peer.on('open', id => {
@@ -207,18 +206,15 @@ peer.on('open', id => {
 //     socket.emit('leave-room', ROOM_ID, peer.id);
 // }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 window.addEventListener("beforeunload", function(event) {
-    if (window.confirm('Are you sure you want to leave the meeting?')) {
-        console.log("Bye bye");
-        socket.emit('leave-room', ROOM_ID, peer.id);
-        event.returnValue = 'true';
-        return true;
-    } else {
-        console.log("Sticking around");
-        event.returnValue = 'false';
-        return false;
-    }
-});
+    console.log("Bye bye");
+    socket.emit('leave-room', ROOM_ID, peer.id);
+    return;
+})
 
 // window.onunload = () => {
 //     console.log("Bye bye");
@@ -324,7 +320,7 @@ const setStopVideo = () => {
 }
 
 const screenShare = () => {
-    window.alert("This feature has not been implemented in the alpha system")
+    window.confirm("This feature has not been implemented in the alpha system")
 }
 
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
