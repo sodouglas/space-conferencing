@@ -202,10 +202,10 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
-peer.on('disconnect', id => {
+window.onbeforeunload = (id) => {
     console.log("Bye bye");
     socket.emit('leave-room', ROOM_ID, id);
-})
+}
 
 peer.on('user-disconnected', id => {
     console.log("See ya");
