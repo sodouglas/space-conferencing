@@ -23,6 +23,7 @@ let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
+let rejected = false; // Used for if someone joins a meeting that is full already
 
 navigator.mediaDevices.getUserMedia({
     video: true,
@@ -245,7 +246,8 @@ socket.on('user-disconnected', userId => {
 
 socket.on('join-cancelled', (userId) => {
     console.log("Received join-cancelled message");
-    if (userId == peer.id){
+    if ((userId === peer.id) && !rejected){
+        rejected = true;
         console.log("I can't join");
     }
 })
