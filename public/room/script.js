@@ -145,6 +145,12 @@ navigator.mediaDevices.getUserMedia({
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
         // console.log(userId);
+        console.log("Participants ", participants.length);
+        if (participants.length == 2) {
+            console.log("Rejecting new participant");
+            socket.emit('room-full', ROOM_ID, userId);
+            return;
+        }
         const call = peer.call(userId, stream);
         newPart = new Participant();
         newPart.id = userId;
@@ -168,7 +174,6 @@ navigator.mediaDevices.getUserMedia({
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
         })
-
     })
 
     socket.on('hand-event', (userId, handIsRaised) => {
@@ -238,19 +243,12 @@ socket.on('user-disconnected', userId => {
     }
 })
 
-// const connectToNewUser = (userId, stream) => {
-//     // console.log(userId);
-//     const call = peer.call(userId, stream);
-//     const video = document.createElement('video');
-//     const hostDestination = audioCtx.createMediaStreamDestination();
-
-//     call.on('stream', userVideoStream => {
-//         let videoTrack = stream.getVideoTracks()[0];
-//         audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-//         hostDestination.stream.addTrack(videoTrack);
-//         addVideoStream(video, hostDestination.stream);
-//     })
-// }
+socket.on('join-cancelled', (userId) => {
+    console.log("Received join-cancelled message");
+    if (userId == peer.id){
+        console.log("I can't join");
+    }
+})
 
 const muteUnmute = () => {
     const enabled = myVideoStream.getAudioTracks()[0].enabled;

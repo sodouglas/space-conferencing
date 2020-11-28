@@ -39,6 +39,11 @@ io.on('connection', socket => {
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('user-disconnected', userId);
     })
+
+    socket.on('room-full', (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('join-cancelled', userId);
+    })
 })
 
 server.listen(process.env.PORT || 3030);
