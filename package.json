@@ -9,9 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "date-fns": "^2.16.1",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "peer": "^0.5.3",
+    "react-bootstrap-sweetalert": "^5.2.0",
+    "semantic-ui-react": "^2.0.1",
     "socket.io": "^3.0.1",
     "uuid": "^8.3.1"
   }

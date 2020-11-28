@@ -11,9 +11,13 @@ const peerServer = ExpressPeerServer(server, {
 app.set('view engine', 'ejs');  // embeds backend to frontend
 app.use(express.static('public'));
 
+app.get('/', (req, res) => {
+    res.render('index');
+})
+
 app.use('/peerjs', peerServer);
 app.get('/', (req, res) => {
-    res.redirect(`/room/${uuidv4()}`);
+    res.status(`/room/${uuidv4()}`);
 })
 
 app.get('/room/:room', (req, res) => {
