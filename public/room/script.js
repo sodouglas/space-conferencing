@@ -1,4 +1,4 @@
-const socket = io('/');
+const socket = io('/room');
 // const videoGrid = document.getElementById('video-grid');
 // console.log(videoGrid);
 // const myVideo = document.createElement('video');
@@ -174,7 +174,7 @@ navigator.mediaDevices.getUserMedia({
         console.log(userId, handIsRaised);
         // console.log(userId);
         // console.log(participants);
-        const userIndex = participants.findIndex((p) => {return p.id === userId;});
+        const userIndex = participants.findIndex((p) => { return p.id === userId; });
         // console.log(userIndex);
         if (userIndex > -1) {
             if (handIsRaised){
@@ -193,7 +193,6 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
-
 })
 
 peer.on('open', id => {
@@ -202,13 +201,40 @@ peer.on('open', id => {
     // (unique) peer id gets auto-generated here
 })
 
-window.onbeforeunload = (id) => {
+window.addEventListener("beforeunload", function(event) {
     console.log("Bye bye");
-    socket.emit('leave-room', ROOM_ID, id);
-}
+    socket.emit('leave-room', ROOM_ID, peer.id);
+    return;
+})
 
-socket.on('user-disconnected', id => {
+socket.on('user-disconnected', userId => {
     console.log("See ya");
+    const userIndex = participants.findIndex((p) => { return p.id === userId; });
+    console.log(userIndex);
+    if (userIndex > -1) {
+        console.log("Before splice");
+        console.log(participants);
+        const discUser = participants[userIndex];
+        discUser.video.style.display = "none";
+        document.getElementById(videoPositions[userIndex] + '-image').style.display = "flex";
+        participants.splice(userIndex, 1);
+        console.log("After splice");
+        console.log(participants);
+        for (i = userIndex; i < participants.length; i++) {
+            // For the videoPositions array, i + 1 is the old location and i is the new location
+            // Hide existing video
+            participants[i].video.style.display = "none";
+            document.getElementById(videoPositions[i + 1] + '-image').style.display = "flex";
+            // Move old video stream to new video location
+            document.getElementById(videoPositions[i] + '-image').style.display = "none";
+            let newVideo = document.getElementById(videoPositions[i] + '-video');
+            newVideo.style.display = "flex";
+            newVideo.srcObject = participants[i].video.srcObject;
+            // Associate new video location to participant
+            participants[i].video = newVideo;
+            participants[i].hand = document.getElementById(videoPositions[i] + '-hand');
+        }
+    }
 })
 
 // const connectToNewUser = (userId, stream) => {
@@ -276,7 +302,7 @@ const setStopVideo = () => {
 }
 
 const screenShare = () => {
-    window.alert("This feature has not been implemented in the alpha system")
+    window.confirm("This feature has not been implemented in the alpha system")
 }
 
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
@@ -307,4 +333,10 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+}
+
+const leaveMeeting = () => {
+    if (confirm("Are you sure you want to leave the meeting?")){
+        window.location.href = '/thank-you'
+    }
 }

@@ -2,17 +2,6 @@ body {
     margin: 0;
     padding: 0;
 }
-/* 
-#video-grid {
-    display: grid;
-    justify-content: center;
-    grid-template-columns: auto auto auto auto;
-} */
-
-/* video {
-    width: 400px;
-    object-fit: cover;
-} */
 
 .feed {
     width: 80%;
@@ -47,6 +36,7 @@ body {
 .main {
     height: 100vh;
     display: flex;
+    font-family: Tahoma, Geneva, sans-serif;
 }
 
 .main__left {
@@ -57,7 +47,7 @@ body {
 
 .main__videos {
     flex-grow: 1;
-    background-color: black;
+    background-color: rgb(29, 29, 29);
     display: flex;
     flex-direction: column;
 }
