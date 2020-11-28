@@ -24,6 +24,10 @@ app.get('/thank-you', (req, res) => {
     res.render('thank-you');
 })
 
+app.get('/room-full', (req, res) => {
+    res.render('room-full');
+})
+
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
         socket.join(roomId);
