@@ -337,6 +337,32 @@ const setRaiseHand = () => {
     document.querySelector('.main__hand_button').innerHTML = html;
 }
 
+const createQuestion = (queuePosition, name) => {
+    // Create main div
+    const question = document.createElement('div');
+    question.className = 'question';
+    // Create hand icon
+    const handIconDiv = document.createElement('div');
+    handIconDiv.className = 'hand-icon-question-queue';
+    const handIcon = document.createElement('i');
+    handIcon.className = 'fas fa-hand-paper';
+    handIconDiv.appendChild(handIcon);
+    question.appendChild(handIconDiv);
+    // Create queue position
+    const queuePos = document.createElement('span');
+    queuePos.style.paddingRight = '5px';
+    queuePos.style.fontWeight = 'bold';
+    queuePos.innerHTML = (queuePosition + 1) + '.';
+    question.appendChild(queuePos);
+    // Create name of person who asked question
+    const person = document.createElement('span');
+    person.style.paddingRight = '30px';
+    person.innerHTML = name;
+    question.appendChild(person);
+    // Append question to queue
+    document.getElementById('question-queue').appendChild(question);
+}
+
 const leaveMeeting = () => {
     if (confirm("Are you sure you want to leave the meeting?")){
         window.location.href = '/thank-you'
