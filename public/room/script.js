@@ -249,6 +249,7 @@ socket.on('join-cancelled', (userId) => {
     if ((userId === peer.id) && !rejected){
         rejected = true;
         console.log("I can't join");
+        window.location.href = '/room-full'
     }
 })
 
