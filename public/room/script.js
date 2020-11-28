@@ -28,6 +28,7 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
+    console.log("Adding user media");
     const addVideoStream = (position, stream) => {
         const newVideo = document.getElementById(position + "-video");
         const newImage = document.getElementById(position + "-image");
@@ -40,7 +41,7 @@ navigator.mediaDevices.getUserMedia({
             newVideo.play();
             newVideo.muted = true;
         })
-        console.log("Video appended");
+        // console.log("Video appended");
         // videoGrid.appendChild(video);
         // videoGrid.appendChild(handIcon);
     }
@@ -193,19 +194,13 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
-
-    peer.on('open', id => {
-        console.log("Joining room");
-        socket.emit('join-room', ROOM_ID, id);
-        // (unique) peer id gets auto-generated here
-    })
 })
 
-// peer.on('open', id => {
-//     console.log("Joining room");
-//     socket.emit('join-room', ROOM_ID, id);
-//     // (unique) peer id gets auto-generated here
-// })
+peer.on('open', id => {
+    console.log("Joining room");
+    socket.emit('join-room', ROOM_ID, id);
+    // (unique) peer id gets auto-generated here
+})
 
 window.addEventListener("beforeunload", function(event) {
     console.log("Bye bye");
