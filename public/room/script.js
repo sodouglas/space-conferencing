@@ -23,6 +23,7 @@ let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
+let rejected = false; // Used for if someone joins a meeting that is full already
 
 navigator.mediaDevices.getUserMedia({
     video: true,
@@ -145,6 +146,12 @@ navigator.mediaDevices.getUserMedia({
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
         // console.log(userId);
+        // console.log("Participants ", participants.length);
+        if (participants.length == 5) {
+            // console.log("Rejecting new participant");
+            socket.emit('room-full', ROOM_ID, userId);
+            return;
+        }
         const call = peer.call(userId, stream);
         newPart = new Participant();
         newPart.id = userId;
@@ -161,18 +168,17 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
-            console.log(participants.length);
+            // console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
         })
-
     })
 
     socket.on('hand-event', (userId, handIsRaised) => {
-        console.log(userId, handIsRaised);
+        // console.log(userId, handIsRaised);
         // console.log(userId);
         // console.log(participants);
         const userIndex = participants.findIndex((p) => { return p.id === userId; });
@@ -197,30 +203,30 @@ navigator.mediaDevices.getUserMedia({
 })
 
 peer.on('open', id => {
-    console.log("Joining room");
+    // console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
 })
 
 window.addEventListener("beforeunload", function(event) {
-    console.log("Bye bye");
+    // console.log("Bye bye");
     socket.emit('leave-room', ROOM_ID, peer.id);
     return;
 })
 
 socket.on('user-disconnected', userId => {
-    console.log("See ya");
+    // console.log("See ya");
     const userIndex = participants.findIndex((p) => { return p.id === userId; });
-    console.log(userIndex);
+    // console.log(userIndex);
     if (userIndex > -1) {
-        console.log("Before splice");
-        console.log(participants);
+        // console.log("Before splice");
+        // console.log(participants);
         const discUser = participants[userIndex];
         discUser.video.style.display = "none";
         document.getElementById(videoPositions[userIndex] + '-image').style.display = "flex";
         participants.splice(userIndex, 1);
-        console.log("After splice");
-        console.log(participants);
+        // console.log("After splice");
+        // console.log(participants);
         for (i = userIndex; i < participants.length; i++) {
             // For the videoPositions array, i + 1 is the old location and i is the new location
             // Hide existing video
@@ -238,19 +244,14 @@ socket.on('user-disconnected', userId => {
     }
 })
 
-// const connectToNewUser = (userId, stream) => {
-//     // console.log(userId);
-//     const call = peer.call(userId, stream);
-//     const video = document.createElement('video');
-//     const hostDestination = audioCtx.createMediaStreamDestination();
-
-//     call.on('stream', userVideoStream => {
-//         let videoTrack = stream.getVideoTracks()[0];
-//         audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-//         hostDestination.stream.addTrack(videoTrack);
-//         addVideoStream(video, hostDestination.stream);
-//     })
-// }
+socket.on('join-cancelled', (userId) => {
+    // console.log("Received join-cancelled message");
+    if ((userId === peer.id) && !rejected){
+        rejected = true;
+        // console.log("I can't join");
+        window.location.href = '/room-full'
+    }
+})
 
 const muteUnmute = () => {
     const enabled = myVideoStream.getAudioTracks()[0].enabled;

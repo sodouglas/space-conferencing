@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank you!</title>
+    <title>Room is Full</title>
     <link rel="stylesheet" href="menus.css">
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -11,9 +11,12 @@
 </head>
 <body>
     <div class="background">
-        <div class="card">
-            <span>Thank you for using</span>
-            <span style="color: rgb(103, 60, 153);"><b>SPACE Conferencing!</b></span>
+        <div class="card room-full">
+            <i class="fas fa-door-closed fa-4x"></i>
+            <p>
+                The room you tried to enter is at its maximum capacity of 6 people.
+            </p>
+            <button>Return To Homepage</button>
         </div>
     </div>
 </body>
