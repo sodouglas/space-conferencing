@@ -1,4 +1,4 @@
-const socket = io('/room');
+const socket = io('/');
 // const videoGrid = document.getElementById('video-grid');
 // console.log(videoGrid);
 // const myVideo = document.createElement('video');
@@ -28,6 +28,7 @@ navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
+    console.log("Adding user media");
     const addVideoStream = (position, stream) => {
         const newVideo = document.getElementById(position + "-video");
         const newImage = document.getElementById(position + "-image");
@@ -40,7 +41,7 @@ navigator.mediaDevices.getUserMedia({
             newVideo.play();
             newVideo.muted = true;
         })
-        console.log("Video appended");
+        // console.log("Video appended");
         // videoGrid.appendChild(video);
         // videoGrid.appendChild(handIcon);
     }
