@@ -18,11 +18,45 @@ class Participant {
     }
 }
 
+class Question {
+    constructor(queuePosition, name, askerId){
+        // Create main div
+        const question = document.createElement('div');
+        question.className = 'question';
+        // Create hand icon
+        const handIconDiv = document.createElement('div');
+        handIconDiv.className = 'hand-icon-question-queue';
+        const handIcon = document.createElement('i');
+        handIcon.className = 'fas fa-hand-paper';
+        handIconDiv.appendChild(handIcon);
+        question.appendChild(handIconDiv);
+        // Create queue position
+        const queuePos = document.createElement('span');
+        queuePos.style.paddingRight = '5px';
+        queuePos.style.fontWeight = 'bold';
+        queuePos.className = 'queue-position';
+        queuePos.innerHTML = (queuePosition + 1) + '.';
+        question.appendChild(queuePos);
+        // Create name of person who asked question
+        const person = document.createElement('span');
+        person.style.paddingRight = '30px';
+        person.innerHTML = name;
+        question.appendChild(person);
+        // Append question to queue
+        document.getElementById('question-queue').appendChild(question);
+        // Fill in class variables
+        this.div = question;
+        this.pos = queuePos;
+        this.askerId = askerId;
+    }
+}
+
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
+let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
 
 navigator.mediaDevices.getUserMedia({
@@ -187,6 +221,7 @@ navigator.mediaDevices.getUserMedia({
             if (handIsRaised){
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
+                questionQueue.push(new Question(questionQueue.length, "Fred", userId));
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -196,6 +231,9 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
+                qIndex = questionQueue.findIndex(q => {q.askerId === userId});
+                questionQueue[qIndex].div.remove();
+                questionQueue.splice(qIndex, 1);
                 participants[userIndex].hand.style.display = "none";
             }
         }
@@ -352,6 +390,7 @@ const createQuestion = (queuePosition, name) => {
     const queuePos = document.createElement('span');
     queuePos.style.paddingRight = '5px';
     queuePos.style.fontWeight = 'bold';
+    queuePos.className = 'queue-position';
     queuePos.innerHTML = (queuePosition + 1) + '.';
     question.appendChild(queuePos);
     // Create name of person who asked question
