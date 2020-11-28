@@ -193,13 +193,19 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
+    
+    peer.on('open', id => {
+        console.log("Joining room");
+        socket.emit('join-room', ROOM_ID, id);
+        // (unique) peer id gets auto-generated here
+    })
 })
 
-peer.on('open', id => {
-    console.log("Joining room");
-    socket.emit('join-room', ROOM_ID, id);
-    // (unique) peer id gets auto-generated here
-})
+// peer.on('open', id => {
+//     console.log("Joining room");
+//     socket.emit('join-room', ROOM_ID, id);
+//     // (unique) peer id gets auto-generated here
+// })
 
 window.addEventListener("beforeunload", function(event) {
     console.log("Bye bye");
