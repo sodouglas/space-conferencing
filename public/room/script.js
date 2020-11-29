@@ -18,11 +18,45 @@ class Participant {
     }
 }
 
+class Question {
+    constructor(queuePosition, name, askerId){
+        // Create main div
+        const question = document.createElement('div');
+        question.className = 'question';
+        // Create hand icon
+        const handIconDiv = document.createElement('div');
+        handIconDiv.className = 'hand-icon-question-queue';
+        const handIcon = document.createElement('i');
+        handIcon.className = 'fas fa-hand-paper';
+        handIconDiv.appendChild(handIcon);
+        question.appendChild(handIconDiv);
+        // Create queue position
+        const queuePos = document.createElement('span');
+        queuePos.style.paddingRight = '5px';
+        queuePos.style.fontWeight = 'bold';
+        queuePos.className = 'queue-position';
+        queuePos.innerHTML = (queuePosition + 1) + '.';
+        question.appendChild(queuePos);
+        // Create name of person who asked question
+        const person = document.createElement('span');
+        person.style.paddingRight = '30px';
+        person.innerHTML = name;
+        question.appendChild(person);
+        // Append question to queue
+        document.getElementById('question-queue').appendChild(question);
+        // Fill in class variables
+        this.div = question;
+        this.pos = queuePos;
+        this.askerId = askerId;
+    }
+}
+
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
+let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
 
 navigator.mediaDevices.getUserMedia({
@@ -187,6 +221,8 @@ navigator.mediaDevices.getUserMedia({
             if (handIsRaised){
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
+                questionQueue.push(new Question(questionQueue.length, "Fred", userId));
+                // console.log(questionQueue);
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -196,11 +232,33 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
+                removeQuestionFromQueue(userId);
+                // qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+                // console.log(qIndex);
+                // console.log(questionQueue);
+                // questionQueue[qIndex].div.remove();
+                // questionQueue.splice(qIndex, 1);
+                // // Fix queue ordering
+                // for (i = qIndex; i < questionQueue.length; i++){
+                //     questionQueue[i].pos.innerHTML = (i + 1) + '.';
+                // }
                 participants[userIndex].hand.style.display = "none";
             }
         }
     })
 })
+
+const removeQuestionFromQueue = (userId) => {
+    const qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+    console.log(qIndex);
+    console.log(questionQueue);
+    questionQueue[qIndex].div.remove();
+    questionQueue.splice(qIndex, 1);
+    // Fix queue ordering
+    for (i = qIndex; i < questionQueue.length; i++){
+        questionQueue[i].pos.innerHTML = (i + 1) + '.';
+    }
+}
 
 peer.on('open', id => {
     // console.log("Joining room");
@@ -328,6 +386,7 @@ const setLowerHand = () => {
         <i class="far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    removeQuestionFromQueue(peer.id);
 }
 
 const setRaiseHand = () => {
@@ -335,6 +394,34 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
+}
+
+const createQuestion = (queuePosition, name) => {
+    // Create main div
+    const question = document.createElement('div');
+    question.className = 'question';
+    // Create hand icon
+    const handIconDiv = document.createElement('div');
+    handIconDiv.className = 'hand-icon-question-queue';
+    const handIcon = document.createElement('i');
+    handIcon.className = 'fas fa-hand-paper';
+    handIconDiv.appendChild(handIcon);
+    question.appendChild(handIconDiv);
+    // Create queue position
+    const queuePos = document.createElement('span');
+    queuePos.style.paddingRight = '5px';
+    queuePos.style.fontWeight = 'bold';
+    queuePos.className = 'queue-position';
+    queuePos.innerHTML = (queuePosition + 1) + '.';
+    question.appendChild(queuePos);
+    // Create name of person who asked question
+    const person = document.createElement('span');
+    person.style.paddingRight = '30px';
+    person.innerHTML = name;
+    question.appendChild(person);
+    // Append question to queue
+    document.getElementById('question-queue').appendChild(question);
 }
 
 const leaveMeeting = () => {
