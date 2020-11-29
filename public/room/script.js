@@ -386,7 +386,7 @@ const setLowerHand = () => {
         <i class="far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
-    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
+    removeQuestionFromQueue(peer.id);
 }
 
 const setRaiseHand = () => {
@@ -394,7 +394,7 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
-    removeQuestionFromQueue(peer.id);
+    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
 }
 
 const createQuestion = (queuePosition, name) => {
