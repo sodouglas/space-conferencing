@@ -1,4 +1,4 @@
-const socket = io('/room');
+const socket = io('/');
 // const videoGrid = document.getElementById('video-grid');
 // console.log(videoGrid);
 // const myVideo = document.createElement('video');
@@ -18,16 +18,52 @@ class Participant {
     }
 }
 
+class Question {
+    constructor(queuePosition, name, askerId){
+        // Create main div
+        const question = document.createElement('div');
+        question.className = 'question';
+        // Create hand icon
+        const handIconDiv = document.createElement('div');
+        handIconDiv.className = 'hand-icon-question-queue';
+        const handIcon = document.createElement('i');
+        handIcon.className = 'fas fa-hand-paper';
+        handIconDiv.appendChild(handIcon);
+        question.appendChild(handIconDiv);
+        // Create queue position
+        const queuePos = document.createElement('span');
+        queuePos.style.paddingRight = '5px';
+        queuePos.style.fontWeight = 'bold';
+        queuePos.className = 'queue-position';
+        queuePos.innerHTML = (queuePosition + 1) + '.';
+        question.appendChild(queuePos);
+        // Create name of person who asked question
+        const person = document.createElement('span');
+        person.style.paddingRight = '30px';
+        person.innerHTML = name;
+        question.appendChild(person);
+        // Append question to queue
+        document.getElementById('question-queue').appendChild(question);
+        // Fill in class variables
+        this.div = question;
+        this.pos = queuePos;
+        this.askerId = askerId;
+    }
+}
+
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
+let questionQueue = [];
+let rejected = false; // Used for if someone joins a meeting that is full already
 
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
+    console.log("Adding user media");
     const addVideoStream = (position, stream) => {
         const newVideo = document.getElementById(position + "-video");
         const newImage = document.getElementById(position + "-image");
@@ -40,7 +76,7 @@ navigator.mediaDevices.getUserMedia({
             newVideo.play();
             newVideo.muted = true;
         })
-        console.log("Video appended");
+        // console.log("Video appended");
         // videoGrid.appendChild(video);
         // videoGrid.appendChild(handIcon);
     }
@@ -144,6 +180,12 @@ navigator.mediaDevices.getUserMedia({
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId) => {
         // console.log(userId);
+        // console.log("Participants ", participants.length);
+        if (participants.length == 5) {
+            // console.log("Rejecting new participant");
+            socket.emit('room-full', ROOM_ID, userId);
+            return;
+        }
         const call = peer.call(userId, stream);
         newPart = new Participant();
         newPart.id = userId;
@@ -160,18 +202,17 @@ navigator.mediaDevices.getUserMedia({
 
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
-            console.log(participants.length);
+            // console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
         })
-
     })
 
     socket.on('hand-event', (userId, handIsRaised) => {
-        console.log(userId, handIsRaised);
+        // console.log(userId, handIsRaised);
         // console.log(userId);
         // console.log(participants);
         const userIndex = participants.findIndex((p) => { return p.id === userId; });
@@ -180,6 +221,8 @@ navigator.mediaDevices.getUserMedia({
             if (handIsRaised){
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
+                questionQueue.push(new Question(questionQueue.length, "Fred", userId));
+                // console.log(questionQueue);
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -189,37 +232,59 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
+                removeQuestionFromQueue(userId);
+                // qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+                // console.log(qIndex);
+                // console.log(questionQueue);
+                // questionQueue[qIndex].div.remove();
+                // questionQueue.splice(qIndex, 1);
+                // // Fix queue ordering
+                // for (i = qIndex; i < questionQueue.length; i++){
+                //     questionQueue[i].pos.innerHTML = (i + 1) + '.';
+                // }
                 participants[userIndex].hand.style.display = "none";
             }
         }
     })
 })
 
+const removeQuestionFromQueue = (userId) => {
+    const qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+    console.log(qIndex);
+    console.log(questionQueue);
+    questionQueue[qIndex].div.remove();
+    questionQueue.splice(qIndex, 1);
+    // Fix queue ordering
+    for (i = qIndex; i < questionQueue.length; i++){
+        questionQueue[i].pos.innerHTML = (i + 1) + '.';
+    }
+}
+
 peer.on('open', id => {
-    console.log("Joining room");
+    // console.log("Joining room");
     socket.emit('join-room', ROOM_ID, id);
     // (unique) peer id gets auto-generated here
 })
 
 window.addEventListener("beforeunload", function(event) {
-    console.log("Bye bye");
+    // console.log("Bye bye");
     socket.emit('leave-room', ROOM_ID, peer.id);
     return;
 })
 
 socket.on('user-disconnected', userId => {
-    console.log("See ya");
+    // console.log("See ya");
     const userIndex = participants.findIndex((p) => { return p.id === userId; });
-    console.log(userIndex);
+    // console.log(userIndex);
     if (userIndex > -1) {
-        console.log("Before splice");
-        console.log(participants);
+        // console.log("Before splice");
+        // console.log(participants);
         const discUser = participants[userIndex];
         discUser.video.style.display = "none";
         document.getElementById(videoPositions[userIndex] + '-image').style.display = "flex";
         participants.splice(userIndex, 1);
-        console.log("After splice");
-        console.log(participants);
+        // console.log("After splice");
+        // console.log(participants);
         for (i = userIndex; i < participants.length; i++) {
             // For the videoPositions array, i + 1 is the old location and i is the new location
             // Hide existing video
@@ -237,19 +302,14 @@ socket.on('user-disconnected', userId => {
     }
 })
 
-// const connectToNewUser = (userId, stream) => {
-//     // console.log(userId);
-//     const call = peer.call(userId, stream);
-//     const video = document.createElement('video');
-//     const hostDestination = audioCtx.createMediaStreamDestination();
-
-//     call.on('stream', userVideoStream => {
-//         let videoTrack = stream.getVideoTracks()[0];
-//         audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-//         hostDestination.stream.addTrack(videoTrack);
-//         addVideoStream(video, hostDestination.stream);
-//     })
-// }
+socket.on('join-cancelled', (userId) => {
+    // console.log("Received join-cancelled message");
+    if ((userId === peer.id) && !rejected){
+        rejected = true;
+        // console.log("I can't join");
+        window.location.href = '/room-full'
+    }
+})
 
 const muteUnmute = () => {
     const enabled = myVideoStream.getAudioTracks()[0].enabled;
@@ -326,6 +386,7 @@ const setLowerHand = () => {
         <i class="far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    removeQuestionFromQueue(peer.id);
 }
 
 const setRaiseHand = () => {
@@ -333,6 +394,34 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
+}
+
+const createQuestion = (queuePosition, name) => {
+    // Create main div
+    const question = document.createElement('div');
+    question.className = 'question';
+    // Create hand icon
+    const handIconDiv = document.createElement('div');
+    handIconDiv.className = 'hand-icon-question-queue';
+    const handIcon = document.createElement('i');
+    handIcon.className = 'fas fa-hand-paper';
+    handIconDiv.appendChild(handIcon);
+    question.appendChild(handIconDiv);
+    // Create queue position
+    const queuePos = document.createElement('span');
+    queuePos.style.paddingRight = '5px';
+    queuePos.style.fontWeight = 'bold';
+    queuePos.className = 'queue-position';
+    queuePos.innerHTML = (queuePosition + 1) + '.';
+    question.appendChild(queuePos);
+    // Create name of person who asked question
+    const person = document.createElement('span');
+    person.style.paddingRight = '30px';
+    person.innerHTML = name;
+    question.appendChild(person);
+    // Append question to queue
+    document.getElementById('question-queue').appendChild(question);
 }
 
 const leaveMeeting = () => {

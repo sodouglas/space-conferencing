@@ -28,6 +28,10 @@ app.get('/thank-you', (req, res) => {
     res.render('thank-you');
 })
 
+app.get('/room-full', (req, res) => {
+    res.render('room-full');
+})
+
 io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
         socket.join(roomId);
@@ -42,6 +46,11 @@ io.on('connection', socket => {
     socket.on('leave-room', (roomId, userId) => {
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('user-disconnected', userId);
+    })
+
+    socket.on('room-full', (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('join-cancelled', userId);
     })
 })
 
