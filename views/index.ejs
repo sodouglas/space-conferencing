@@ -4,42 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="./stylesheets/style.css">
+    <link rel="stylesheet" href="menus.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" data-auto-a11y="true"></script>
     <title>SPACE Conferencing Login Page</title>
 <body>
-    <nav class="navbar navbar-light" style="background-color: #343434;">
-            <h2 style="color: slategray; text-align: center;">Welcome To Space Conferencing</h2>
-      </nav>
-
-      <form>
-        <div class="form-row">
-            <div class="form-group col-md-6">
-    <div id="createRoom">
-
-        <h4>Host Name: <span hostName="hostName"></span></h4>
-        <input type="text" name="hostName" id="hostName" placeholder="Name">
-        <div class="form-row"></div>
-        <button id="createRoom">Create Room</button>
-    </div>
-      </div>
+    <div class="background">
+        <span class="title">Welcome to SPACE Conferencing!</span>
+        <div class="card login">
+            <div class="tab-bar">
+                <button id="join-button" class="tab-button tab-button-active" onclick="showJoin()">Join</button>
+                <button id="create-button" class="tab-button" onclick="showCreate()">Create</button>
             </div>
-
-            <div class="form-group col-md-6"></div>
-      <div id="joinRoom">
-          <h4>Meeting ID: <span meetingId="meetingId"></span></h4>
-          <input type="text" name="meetingId" id="message" placeholder="Unique ID">
-          <div class="form-row">
-          <button id="joinRoom">Join Room</button>
-          </div>
-      </div>
+            <div id="name-field" class="input-field">
+                <span style="padding-right: 10px;">Your name:</span>
+                <input></input>
+            </div>
+            <div id="room-field" class="input-field">
+                <span>Room ID:</span>
+                <input></input>
+            </div>
+            <button class="submit-button" onclick="joinOrCreateMeeting()">Join Meeting</button>
         </div>
-      </div>
     </div>
-  </div>
-</form>
-        
-        </div>
-        </div>
-        </body>
-
-        </html>
+    <script src="login.js"></script>
+</body>
+</html>
