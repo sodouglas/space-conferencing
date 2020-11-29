@@ -18,6 +18,9 @@ class Participant {
     }
 }
 
+console.log(USER_NAME);
+console.log(ROOM_ID);
+
 class Question {
     constructor(queuePosition, name, askerId){
         // Create main div

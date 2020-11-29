@@ -12,12 +12,17 @@ app.set('view engine', 'ejs');  // embeds backend to frontend
 app.use(express.static('public'));
 
 app.use('/peerjs', peerServer);
+
 app.get('/', (req, res) => {
-    res.redirect(`/room/${uuidv4()}`);
+    res.render('index');
 })
 
-app.get('/room/:room', (req, res) => {
-    res.render('room', { roomId: req.params.room });
+app.get('/new-room/:name', (req, res) => {
+    res.redirect(`/room/${uuidv4()}.${req.params.name}`);
+})
+
+app.get('/room/:room.:name', (req, res) => {
+    res.render('room', { roomId: req.params.room, name: req.params.name});
 })
 
 app.get('/thank-you', (req, res) => {

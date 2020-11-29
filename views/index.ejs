@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="menus.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" data-auto-a11y="true"></script>
+    <title>SPACE Conferencing Login Page</title>
+</head>
+<body>
+    <div class="background">
+        <span class="title">Welcome to SPACE Conferencing!</span>
+        <div class="card login">
+            <div class="tab-bar">
+                <button id="join-button" class="tab-button tab-button-active" onclick="showJoin()">Join</button>
+                <button id="create-button" class="tab-button" onclick="showCreate()">Create</button>
+            </div>
+            <div id="name-field" class="input-field">
+                <span style="padding-right: 10px;">Your name:</span>
+                <input></input>
+            </div>
+            <div id="room-field" class="input-field">
+                <span>Room ID:</span>
+                <input></input>
+            </div>
+            <button class="submit-button" onclick="joinOrCreateMeeting()">Join Meeting</button>
+        </div>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>
