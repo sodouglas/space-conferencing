@@ -162,6 +162,11 @@ navigator.mediaDevices.getUserMedia({
         // Create raised hand icon
         newPart.hand = document.getElementById(position + "-hand");
 
+        // Add participant name
+        console.log(call.metadata);
+        document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
+        newPart.name = call.metadata.callerName;
+
         // Add new participant to the array
         participants.push(newPart);
 
@@ -187,7 +192,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream);
+        const call = peer.call(userId, stream, metadata={callerName: USER_NAME});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
