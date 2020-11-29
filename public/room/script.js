@@ -237,6 +237,10 @@ navigator.mediaDevices.getUserMedia({
                 console.log(questionQueue);
                 questionQueue[qIndex].div.remove();
                 questionQueue.splice(qIndex, 1);
+                // Fix queue ordering
+                for (i = qIndex; i < questionQueue.length; i++){
+                    questionQueue[i].pos.innerHTML = (i + 1) + '.';
+                }
                 participants[userIndex].hand.style.display = "none";
             }
         }
