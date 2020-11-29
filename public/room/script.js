@@ -222,6 +222,7 @@ navigator.mediaDevices.getUserMedia({
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
                 questionQueue.push(new Question(questionQueue.length, "Fred", userId));
+                console.log(questionQueue);
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -232,6 +233,8 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.play();
             } else {
                 qIndex = questionQueue.findIndex(q => {q.askerId === userId});
+                console.log(qIndex);
+                console.log(questionQueue);
                 questionQueue[qIndex].div.remove();
                 questionQueue.splice(qIndex, 1);
                 participants[userIndex].hand.style.display = "none";
