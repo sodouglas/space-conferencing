@@ -192,7 +192,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream, metadata={callerName: USER_NAME});
+        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
