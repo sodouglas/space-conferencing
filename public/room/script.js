@@ -232,7 +232,7 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
-                qIndex = questionQueue.findIndex(q => {q.askerId === userId});
+                qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
                 console.log(qIndex);
                 console.log(questionQueue);
                 questionQueue[qIndex].div.remove();
