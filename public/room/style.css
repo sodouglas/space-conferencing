@@ -4,8 +4,9 @@ body {
 }
 
 .feed {
-    width: 80%;
-    min-width: 250px;
+    width: 75%;
+    max-height: 100%;
+    min-width: 200px;
 }
 
 .full-feed{
@@ -15,9 +16,23 @@ body {
     transform: translate(0,0);
 }
 
+.feed-and-name{
+    width: 30%;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.full-feed-test{
+    justify-content: center;
+    display: flex;
+    transform: translate(0,0);
+}
+
 .top-edge {
     position: relative;
-    top: 4vh;
+    margin-top: 4vh;
 }
 
 .bottom-left{
@@ -25,8 +40,8 @@ body {
 }
 
 .bottom-center {
-    width: 60%;
-    min-width: 200px;
+    width: 50%;
+    min-width: 150px;
 }
 
 .bottom-right {
@@ -103,7 +118,7 @@ body {
 
 .hand-icon {
     position: absolute;
-    right: 5vw;
+    right: 4vw;
     color: #fff;
     border-radius: 100%;
     background: rgb(0, 119, 255);
@@ -117,11 +132,11 @@ body {
 }
 
 .icon-high {
-    top: 85px;
+    top: 40px;
 }
 
 .icon-low {
-    top: 55px;
+    top: 10px;
 }
 
 .hide {
@@ -130,7 +145,7 @@ body {
 
 .video-row {
     display: flex;
-    height: 42vh;
+    height: 35vh;
 }
 
 #question-queue {
@@ -171,9 +186,21 @@ body {
 }
 
 .top-row{
-    justify-content: space-evenly;
+    justify-content: center;
 }
 
 .bottom-row{
     justify-content: space-between;
+    margin-top: 10px;
+}
+
+h2 {
+    height: 30px;
+    color: white;
+}
+
+.username {
+    margin-top: 3px;
+    color: white;
+    font-size: 20px;
 }

@@ -18,50 +18,69 @@
     <div class="main">
         <div class="main__left">
             <div class="main__videos" id="all-videos">
+                <h2 style="text-align: center;">Room ID: <%= roomId %></h2>
                 <div class="video-row top-row">
-                    <div class="full-feed">
-                        <video class="feed top-edge" id="top-left-video" style="display: none;"></video>
-                        <img class="feed top-edge" id="top-left-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon icon-high" id="top-left-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed top-edge" id="top-left-video" style="display: none;"></video>
+                            <img class="feed top-edge" id="top-left-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon icon-high" id="top-left-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="top-left-name"></span>
                     </div>
-                    <div class="full-feed">
-                        <video class="feed top-center" id="top-center-video" style="display: none;"></video>
-                        <img class="feed top-center" id="top-center-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon icon-low" id="top-center-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed top-center" id="top-center-video" style="display: none;"></video>
+                            <img class="feed top-center" id="top-center-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon icon-low" id="top-center-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="top-center-name"></span>
                     </div>
-                    <div class="full-feed">
-                        <video class="feed top-edge" id="top-right-video" style="display: none;"></video>
-                        <img class="feed top-edge" id="top-right-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon icon-high" id="top-right-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed top-edge" id="top-right-video" style="display: none;"></video>
+                            <img class="feed top-edge" id="top-right-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon icon-high" id="top-right-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="top-right-name"></span>
                     </div>
                 </div>
                 <div class="video-row bottom-row">
-                    <div class="full-feed">
-                        <video class="feed bottom-left" id="bottom-left-video" style="display: none;"></video>
-                        <img class="feed bottom-left" id="bottom-left-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon icon-low" id="bottom-left-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed bottom-left" id="bottom-left-video" style="display: none;"></video>
+                            <img class="feed bottom-left" id="bottom-left-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon icon-low" id="bottom-left-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="bottom-left-name"></span>
                     </div>
-                    <div class="full-feed">
-                        <video class="feed bottom-center" id="bottom-center-video" style="display: none;"></video>
-                        <img class="feed bottom-center" id="bottom-center-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon" id="bottom-center-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed bottom-center" id="bottom-center-video" style="display: none;"></video>
+                            <img class="feed bottom-center" id="bottom-center-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon" id="bottom-center-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="bottom-center-name"><%= name %></span>
                     </div>
-                    <div class="full-feed">
-                        <video class="feed bottom-right" id="bottom-right-video" style="display: none;"></video>
-                        <img class="feed bottom-right" id="bottom-right-image" src="space-person-icon.svg" alt="Participant">
-                        <div class="hand-icon icon-low" id="bottom-right-hand" style="display: none;">
-                            <i class="fas fa-hand-paper fa-lg"></i>
+                    <div class="feed-and-name">
+                        <div class="full-feed-test">
+                            <video class="feed bottom-right" id="bottom-right-video" style="display: none;"></video>
+                            <img class="feed bottom-right" id="bottom-right-image" src="space-person-icon.svg" alt="Participant">
+                            <div class="hand-icon icon-low" id="bottom-right-hand" style="display: none;">
+                                <i class="fas fa-hand-paper fa-lg"></i>
+                            </div>
                         </div>
+                        <span class="username" id="bottom-right-name"></span>
                     </div>
                 </div>
                 <div id="question-queue">
