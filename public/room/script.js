@@ -222,7 +222,7 @@ navigator.mediaDevices.getUserMedia({
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
                 questionQueue.push(new Question(questionQueue.length, "Fred", userId));
-                console.log(questionQueue);
+                // console.log(questionQueue);
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
                     handAudioSrc.connect(panners[userIndex]).connect(audioCtx.destination);
@@ -232,20 +232,33 @@ navigator.mediaDevices.getUserMedia({
                 handAudioElement.load();
                 handAudioElement.play();
             } else {
-                qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
-                console.log(qIndex);
-                console.log(questionQueue);
-                questionQueue[qIndex].div.remove();
-                questionQueue.splice(qIndex, 1);
-                // Fix queue ordering
-                for (i = qIndex; i < questionQueue.length; i++){
-                    questionQueue[i].pos.innerHTML = (i + 1) + '.';
-                }
+                removeQuestionFromQueue(userId);
+                // qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+                // console.log(qIndex);
+                // console.log(questionQueue);
+                // questionQueue[qIndex].div.remove();
+                // questionQueue.splice(qIndex, 1);
+                // // Fix queue ordering
+                // for (i = qIndex; i < questionQueue.length; i++){
+                //     questionQueue[i].pos.innerHTML = (i + 1) + '.';
+                // }
                 participants[userIndex].hand.style.display = "none";
             }
         }
     })
 })
+
+const removeQuestionFromQueue = (userId) => {
+    const qIndex = questionQueue.findIndex(q => {return q.askerId === userId});
+    console.log(qIndex);
+    console.log(questionQueue);
+    questionQueue[qIndex].div.remove();
+    questionQueue.splice(qIndex, 1);
+    // Fix queue ordering
+    for (i = qIndex; i < questionQueue.length; i++){
+        questionQueue[i].pos.innerHTML = (i + 1) + '.';
+    }
+}
 
 peer.on('open', id => {
     // console.log("Joining room");
@@ -373,6 +386,7 @@ const setLowerHand = () => {
         <i class="far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
 }
 
 const setRaiseHand = () => {
@@ -380,6 +394,7 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
+    removeQuestionFromQueue(peer.id);
 }
 
 const createQuestion = (queuePosition, name) => {
