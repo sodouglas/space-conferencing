@@ -34,6 +34,7 @@ const joinOrCreateMeeting = () => {
             window.location.href = '/new-room/' + name;
         }
     }).catch(err => {
-        alert("Unable to get user media. Please refresh the page and try again!");
+        alert("Unable to get user media. Please allow the use of " + 
+        "microphone and video devices in the top right hand corner to continue.");
     });
 }
