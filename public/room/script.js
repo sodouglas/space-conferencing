@@ -373,45 +373,89 @@ const setStopVideo = () => {
     document.querySelector('.main__video_button').innerHTML = html;
 }
 
-const screenShare = () => {
-    // BUG: macOS must enable permissions...
-    // System Preferences -> Security & Privacy -> Privacy -> Screen Recording -> Enable Google Chrome (or browser of choice) 
-    
-    navigator.mediaDevices.getDisplayMedia({
-            video: { cursor: "always" },
-            audio: { echoCancellation: true, noiseSuppression: true }
-    }).then((stream) => {
-        console.log('streaming now...')
-        setShareOn();
-        const video = document.querySelector('#bottom-center-video');
-        video.srcObject = stream;
+//
+// Screen Sharing
+// 
 
-        stream.getVideoTracks()[0].addEventListener('ended', () => {
-            errorMsg('The user has ended screen sharing.');
-            setShareOff();
-        })
-    }).catch((err) => {
-        console.error("Error: unable to display media, " + err)
-    })
-    // window.confirm("This feature has not been implemented in the alpha system")
+const shareButton = document.querySelector('.main__share_button');
+
+function handleSuccess(stream) {
+    shareButton.disabled = true;
+    const video = document.querySelector('#bottom-center-video');
+    video.srcObject = stream;
+    setShareOn();
+    
+    // detect when user stops sharing from SPACE UI
+    shareButton.addEventListener('click', endScreenShare, false);      // TODO: (BUG) Loads screenshare again
+    // detect when user stops sharing from chrome 'Stop Sharing' button
+    stream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
+
+    function endScreenShare(event) {
+        console.error('The user has ended sharing the screen');
+        video.srcObject = myVideoStream;
+        shareButton.disabled = false;
+        setShareOff();
+    }
 }
+
+function handleError(error) {
+    console.error(`getDisplayMedia error: ${error.name}`, error);
+  }
+
+shareButton.addEventListener('click', () => {
+    navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: "always" },
+        audio: { echoCancellation: true, noiseSuppression: true }
+    }).then(handleSuccess, handleError);
+});
+
+if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {
+    shareButton.disabled = false;
+} else {
+    console.error('getDisplayMedia is not supported');
+}
+
+// const screenShare = () => {
+//     // BUG: macOS must enable permissions...
+//     // System Preferences -> Security & Privacy -> Privacy -> Screen Recording -> Enable Google Chrome (or browser of choice) 
+//     // if (sharebutton.enabled = false) {
+//     //     // enable screensharing
+        
+//     // } else {
+//     //     // disable screensharing
+//     // }
+
+//     navigator.mediaDevices.getDisplayMedia({
+//         video: { cursor: "always" },
+//         audio: { echoCancellation: true, noiseSuppression: true }
+//     }).then((stream) => {
+//         console.log('streaming now...')
+//         setShareOn();
+//         const video = document.querySelector('#bottom-center-video');
+//         video.srcObject = stream;
+
+//         stream.getVideoTracks()[0].addEventListener('ended', () => {
+//             errorMsg('The user has ended screen sharing.');
+//             setShareOff();
+//         })
+//     }).catch((err) => {
+//         console.error("Error: unable to display media, " + err)
+//     })
+
+// }
 
 const setShareOn = () => {
     const html = `
         <i class="fas fa-laptop fa-lg" style="color:green"></i>
     `
-    const button = document.querySelector('.main__share_button');
-    button.innerHTML = html;
-    button.enabled = true;
+    shareButton.innerHTML = html;
 }
 
 const setShareOff = () => {
     const html = `
-        <i class="fas fa-laptop fa-lg" style="color:green"></i>
+        <i class="fas fa-laptop fa-lg"></i>
     `
-    const button = document.querySelector('.main__share_button');
-    button.innerHTML = html;
-    button.enabled = false;
+    shareButton.innerHTML = html;
 }
 
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
