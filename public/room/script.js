@@ -232,10 +232,10 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).
-                connect(analyzers[participants.length - 1].analyzer).
-                connect(panners[participants.length - 1]).
-                connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(analyzers[participants.length - 1].analyzer)
+                .connect(panners[participants.length - 1])
+                .connect(audioCtx.destination);
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
@@ -320,6 +320,9 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
+
+    muteUnmute();
+    playStop();
 })
 
 const removeQuestionFromQueue = (userId) => {
