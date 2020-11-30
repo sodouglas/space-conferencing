@@ -22,11 +22,19 @@ const showCreate = () => {
 }
 
 const joinOrCreateMeeting = () => {
-    const name = document.getElementById('name-field').querySelector('input').value;
-    if (isJoining){
-        const roomId = roomField.querySelector('input').value;
-        window.location.href = '/room/' + roomId + '.' + name;
-    } else {
-        window.location.href = '/new-room/' + name;
-    }
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    }).then(stream => {
+        const name = document.getElementById('name-field').querySelector('input').value;
+        if (isJoining){
+            const roomId = roomField.querySelector('input').value;
+            window.location.href = '/room/' + roomId + '.' + name;
+        } else {
+            window.location.href = '/new-room/' + name;
+        }
+    }).catch(err => {
+        alert("Unable to get user media. Please allow the use of " + 
+        "microphone and video devices in the top right hand corner to continue.");
+    });
 }

@@ -91,3 +91,8 @@ body {
     font-size: 40px;
     padding-bottom: 30px;
 }
+
+.login-input {
+    font-size: 15px;
+    width: 300px
+}
