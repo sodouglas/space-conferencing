@@ -34,9 +34,9 @@ app.get('/room-full', (req, res) => {
 })
 
 io.on('connection', socket => {
-    socket.on('join-room', (roomId, userId) => {
+    socket.on('join-room', (roomId, userId, username) => {
         socket.join(roomId);
-        socket.to(roomId).broadcast.emit('user-connected', userId);
+        socket.to(roomId).broadcast.emit('user-connected', userId, username);
     })
 
     socket.on('hand-event', (roomId, userId, handIsRaised) => {

@@ -15,11 +15,9 @@ class Participant {
         this.id = "";
         this.video = null;
         this.hand = null;
+        this.name = null;
     }
 }
-
-console.log(USER_NAME);
-console.log(ROOM_ID);
 
 class Question {
     constructor(queuePosition, name, askerId){
@@ -164,6 +162,11 @@ navigator.mediaDevices.getUserMedia({
         // Create raised hand icon
         newPart.hand = document.getElementById(position + "-hand");
 
+        // Add participant name
+        console.log(call.metadata);
+        document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
+        newPart.name = call.metadata.callerName;
+
         // Add new participant to the array
         participants.push(newPart);
 
@@ -181,7 +184,7 @@ navigator.mediaDevices.getUserMedia({
     })
 
     // Move connectToNewUser over here to utilize the audioCtx
-    socket.on('user-connected', (userId) => {
+    socket.on('user-connected', (userId, username) => {
         // console.log(userId);
         // console.log("Participants ", participants.length);
         if (participants.length == 5) {
@@ -189,7 +192,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream);
+        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
@@ -200,6 +203,10 @@ navigator.mediaDevices.getUserMedia({
         
         // Assign raised hand icon
         newPart.hand = document.getElementById(position + "-hand");
+
+        // Update participant name
+        document.getElementById(position + "-name").innerHTML = username;
+        newPart.name = username;
 
         participants.push(newPart);
 
@@ -224,7 +231,7 @@ navigator.mediaDevices.getUserMedia({
             if (handIsRaised){
                 handAudioSrc.disconnect();
                 participants[userIndex].hand.style.display = "flex";
-                questionQueue.push(new Question(questionQueue.length, "Fred", userId));
+                questionQueue.push(new Question(questionQueue.length, participants[userIndex].name, userId));
                 // console.log(questionQueue);
                 const state = document.querySelector('.main__spatial_text').innerHTML;
                 if (state === "3D On") {
@@ -265,7 +272,7 @@ const removeQuestionFromQueue = (userId) => {
 
 peer.on('open', id => {
     // console.log("Joining room");
-    socket.emit('join-room', ROOM_ID, id);
+    socket.emit('join-room', ROOM_ID, id, USER_NAME);
     // (unique) peer id gets auto-generated here
 })
 
@@ -397,7 +404,7 @@ const setRaiseHand = () => {
         <i class="fas fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
-    questionQueue.push(new Question(questionQueue.length, "Fred", peer.id));
+    questionQueue.push(new Question(questionQueue.length, USER_NAME, peer.id));
 }
 
 const createQuestion = (queuePosition, name) => {
