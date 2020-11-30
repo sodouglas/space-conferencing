@@ -164,10 +164,10 @@ navigator.mediaDevices.getUserMedia({
     }
     const whosTalking = () => {
         for (i = 0; i < participants.length; i++){
-            console.log("Participant")
+            // console.log("Participant")
             processAudioVolume(analyzers[i], videoPositions[i]);
         }
-        console.log("Host");
+        // console.log("Host");
         processAudioVolume(myAnalyzer, "bottom-center");
         window.requestAnimationFrame(whosTalking);
     }
