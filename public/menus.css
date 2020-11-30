@@ -96,3 +96,9 @@ body {
     font-size: 15px;
     width: 300px
 }
+
+.background-text {
+    color: white;
+    font-size: 20px;
+    padding-bottom: 30px;
+}
