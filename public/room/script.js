@@ -135,7 +135,7 @@ navigator.mediaDevices.getUserMedia({
         // console.log(meanSquared);
         // Magic number is the threshold for speech
         if (meanSquared > 100){
-            document.getElementById('bottom-center-video').style.border = '4px solid red'
+            document.getElementById('bottom-center-video').style.border = '4px solid #22aeff'
         } else {
             smoothing += 1;
             if (smoothing == 50){
