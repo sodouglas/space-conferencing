@@ -115,12 +115,6 @@ navigator.mediaDevices.getUserMedia({
         })
     }
 
-    const newAnalyzer = () => {
-        let a = audioCtx.createAnalyser();
-        a.fftSize = 1024;
-        return a;
-    }
-
     const audioCtx = new AudioContext();
     const panners = [
         newPanner(0,0,-3,0,0,1),    // center
@@ -359,6 +353,7 @@ socket.on('user-disconnected', userId => {
         const discUser = participants[userIndex];
         discUser.video.style.display = "none";
         document.getElementById(videoPositions[userIndex] + '-image').style.display = "flex";
+        document.getElementById(videoPositions[userIndex] + '-name').innerHTML = "";
         participants.splice(userIndex, 1);
         // console.log("After splice");
         // console.log(participants);
