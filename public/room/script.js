@@ -501,3 +501,11 @@ const leaveMeeting = () => {
         window.location.href = '/thank-you'
     }
 }
+
+const copyRoomId = () => {
+    navigator.clipboard.writeText(ROOM_ID);
+    document.getElementById("copy-button").innerHTML = "Copied!";
+    setTimeout(() => {
+        document.getElementById("copy-button").innerHTML = "Copy ID to clipboard"
+    }, 2000);
+}

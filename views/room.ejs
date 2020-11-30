@@ -18,7 +18,10 @@
     <div class="main">
         <div class="main__left">
             <div class="main__videos" id="all-videos">
-                <h2 style="text-align: center;">Room ID: <%= roomId %></h2>
+                <div class="heading">
+                    <h3>Room ID: <%= roomId %></h3>
+                    <button id="copy-button" onclick="copyRoomId()">Copy ID to clipboard</button>
+                </div>
                 <div class="video-row top-row">
                     <div class="feed-and-name">
                         <div class="full-feed-test">
