@@ -218,6 +218,8 @@ navigator.mediaDevices.getUserMedia({
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
+
+
         })
     })
 
@@ -372,7 +374,44 @@ const setStopVideo = () => {
 }
 
 const screenShare = () => {
-    window.confirm("This feature has not been implemented in the alpha system")
+    // BUG: macOS must enable permissions...
+    // System Preferences -> Security & Privacy -> Privacy -> Screen Recording -> Enable Google Chrome (or browser of choice) 
+    
+    navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "always" },
+            audio: { echoCancellation: true, noiseSuppression: true }
+    }).then((stream) => {
+        console.log('streaming now...')
+        setShareOn();
+        const video = document.querySelector('#bottom-center-video');
+        video.srcObject = stream;
+
+        stream.getVideoTracks()[0].addEventListener('ended', () => {
+            errorMsg('The user has ended screen sharing.');
+            setShareOff();
+        })
+    }).catch((err) => {
+        console.error("Error: unable to display media, " + err)
+    })
+    // window.confirm("This feature has not been implemented in the alpha system")
+}
+
+const setShareOn = () => {
+    const html = `
+        <i class="fas fa-laptop fa-lg" style="color:green"></i>
+    `
+    const button = document.querySelector('.main__share_button');
+    button.innerHTML = html;
+    button.enabled = true;
+}
+
+const setShareOff = () => {
+    const html = `
+        <i class="fas fa-laptop fa-lg" style="color:green"></i>
+    `
+    const button = document.querySelector('.main__share_button');
+    button.innerHTML = html;
+    button.enabled = false;
 }
 
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
