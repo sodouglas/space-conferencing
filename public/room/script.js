@@ -52,9 +52,16 @@ class Question {
     }
 }
 
+class Analyzer {
+    constructor(audioCtx) {
+        this.analyzer = audioCtx.createAnalyser();
+        this.analyzer.fftSize = 1024;
+        this.smoothing = 0;
+    }
+}
+
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
-let participantCount = 0;
 let handRaised = false;
 let participants = [];
 let questionQueue = [];
@@ -108,6 +115,12 @@ navigator.mediaDevices.getUserMedia({
         })
     }
 
+    const newAnalyzer = () => {
+        let a = audioCtx.createAnalyser();
+        a.fftSize = 1024;
+        return a;
+    }
+
     const audioCtx = new AudioContext();
     const panners = [
         newPanner(0,0,-3,0,0,1),    // center
@@ -116,17 +129,22 @@ navigator.mediaDevices.getUserMedia({
         newPanner(-3,0,-1,3,0,1),   // hard left
         newPanner(3,0,1,-3,0,-1)    // hard right
     ];
+    const analyzers = [
+        newAnalyzer(),  // center
+        newAnalyzer(),  // soft left
+        newAnalyzer(),  // soft right
+        newAnalyzer(),  // hard left
+        newAnalyzer()   // hard right
+    ];
 
     const myAudio = audioCtx.createMediaStreamSource(stream);
-    const analyzer = audioCtx.createAnalyser();
-    analyzer.fftSize = 1024;
-    myAudio.connect(analyzer);
+    const myAnalyzer = new Analyzer(audioCtx);
+    myAudio.connect(myAnalyzer.analyzer);
 
-    let smoothing = 0;
-    const whosTalking = () => {
-        const bufferLength = analyzer.frequencyBinCount;
+    const processAudioVolume = (analyzer, pos) => {
+        const bufferLength = analyzer.analyzer.frequencyBinCount;
         var dataArray = new Uint8Array(bufferLength);
-        analyzer.getByteTimeDomainData(dataArray);
+        analyzer.analyzer.getByteTimeDomainData(dataArray);
         var meanSquared = 0;
         dataArray.forEach(d => {
             meanSquared += (d - 128) * (d - 128);
@@ -135,14 +153,22 @@ navigator.mediaDevices.getUserMedia({
         // console.log(meanSquared);
         // Magic number is the threshold for speech
         if (meanSquared > 100){
-            document.getElementById('bottom-center-video').style.border = '4px solid #22aeff'
+            document.getElementById(pos + '-video').style.border = '4px solid #46de40'
         } else {
-            smoothing += 1;
-            if (smoothing == 50){
-                document.getElementById('bottom-center-video').style.border = '0px';
-                smoothing = 0;
+            analyzer.smoothing += 1;
+            if (analyzer.smoothing == 50){
+                document.getElementById(pos + '-video').style.border = '0px';
+                analyzer.smoothing = 0;
             }
         }
+    }
+    const whosTalking = () => {
+        for (i = 0; i < participants.length; i++){
+            console.log("Participant")
+            processAudioVolume(analyzers[i], videoPositions[i]);
+        }
+        console.log("Host");
+        processAudioVolume(myAnalyzer, "bottom-center");
         window.requestAnimationFrame(whosTalking);
     }
 
@@ -206,7 +232,10 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream).
+                connect(analyzers[participants.length - 1]).
+                connect(panners[participants.length - 1]).
+                connect(audioCtx.destination);
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
@@ -245,7 +274,10 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
             // console.log(participants.length);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(analyzers[participants.length - 1])
+                .connect(panners[participants.length - 1])
+                .connect(audioCtx.destination);
             console.log("User connected");
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
