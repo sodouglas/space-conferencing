@@ -130,11 +130,11 @@ navigator.mediaDevices.getUserMedia({
         newPanner(3,0,1,-3,0,-1)    // hard right
     ];
     const analyzers = [
-        newAnalyzer(),  // center
-        newAnalyzer(),  // soft left
-        newAnalyzer(),  // soft right
-        newAnalyzer(),  // hard left
-        newAnalyzer()   // hard right
+        new Analyzer(audioCtx),  // center
+        new Analyzer(audioCtx),  // soft left
+        new Analyzer(audioCtx),  // soft right
+        new Analyzer(audioCtx),  // hard left
+        new Analyzer(audioCtx)   // hard right
     ];
 
     const myAudio = audioCtx.createMediaStreamSource(stream);
