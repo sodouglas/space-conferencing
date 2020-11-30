@@ -116,6 +116,38 @@ navigator.mediaDevices.getUserMedia({
         newPanner(-3,0,-1,3,0,1),   // hard left
         newPanner(3,0,1,-3,0,-1)    // hard right
     ];
+
+    const myAudio = audioCtx.createMediaStreamSource(stream);
+    const analyzer = audioCtx.createAnalyser();
+    analyzer.fftSize = 1024;
+    myAudio.connect(analyzer);
+
+    let smoothing = 0;
+    const whosTalking = () => {
+        const bufferLength = analyzer.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+        analyzer.getByteTimeDomainData(dataArray);
+        var meanSquared = 0;
+        dataArray.forEach(d => {
+            meanSquared += (d - 128) * (d - 128);
+        });
+        meanSquared = meanSquared / bufferLength;
+        // console.log(meanSquared);
+        // Magic number is the threshold for speech
+        if (meanSquared > 100){
+            document.getElementById('bottom-center-video').style.border = '4px solid red'
+        } else {
+            smoothing += 1;
+            if (smoothing == 50){
+                document.getElementById('bottom-center-video').style.border = '0px';
+                smoothing = 0;
+            }
+        }
+        window.requestAnimationFrame(whosTalking);
+    }
+
+    whosTalking();
+
     const handAudioElement = document.createElement("audio");
     handAudioElement.src = "space_notif_final.wav";
     const handAudioSrc = audioCtx.createMediaElementSource(handAudioElement);
