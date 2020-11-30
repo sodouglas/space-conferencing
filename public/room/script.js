@@ -233,7 +233,7 @@ navigator.mediaDevices.getUserMedia({
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
             audioCtx.createMediaStreamSource(userVideoStream).
-                connect(analyzers[participants.length - 1]).
+                connect(analyzers[participants.length - 1].analyzer).
                 connect(panners[participants.length - 1]).
                 connect(audioCtx.destination);
             console.log("On call");
@@ -275,7 +275,7 @@ navigator.mediaDevices.getUserMedia({
             //let videoTrack = userVideoStream.getVideoTracks()[0];
             // console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream)
-                .connect(analyzers[participants.length - 1])
+                .connect(analyzers[participants.length - 1].analyzer)
                 .connect(panners[participants.length - 1])
                 .connect(audioCtx.destination);
             console.log("User connected");
