@@ -203,6 +203,8 @@ navigator.mediaDevices.getUserMedia({
             const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
             position = videoPositions[pIndex];
             if (call.metadata.endingDisplayStream){
+                participants[pIdx].displayCall.close();
+                participants[pIdx].videoCall.close();
                 console.log("Enabling share");
                 shareButton.disabled = false;
                 shareButton.style.color = "white";
@@ -229,10 +231,6 @@ navigator.mediaDevices.getUserMedia({
             }
             if (!call.metadata.userJoining && !call.metadata.endingDisplayStream){
                 participants[pIdx].displayCall = call;
-                participants[pIdx].videoCall.close();
-            }
-            if (call.metadata.endingDisplayStream){
-                participants[pIdx].displayCall.close();
             }
             // console.log("On call");
             // console.log(participants);
@@ -455,7 +453,6 @@ function handleSuccess(stream) {
     myVideo.srcObject = myDisplayStream;
     document.getElementById('all-videos').style.backgroundColor = "#312252";
     participants.forEach(p => {
-        p.videoCall.close();
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
         const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
         p.displayCall = displayCall;
@@ -475,6 +472,7 @@ function endScreenShare(event) {
     console.log('The user has ended sharing the screen');
     participants.forEach(p => {
         p.displayCall.close();
+        p.videoCall.close();
     });
     participants.forEach(p => {
         const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
