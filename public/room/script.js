@@ -64,7 +64,7 @@ let participants = [];
 let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
 let respondToDisplay;
-let audioCtx;
+// let audioCtx;
 
 // Screen share stuff
 const shareButton = document.querySelector('.main__share_button');
@@ -135,7 +135,7 @@ navigator.mediaDevices.getUserMedia({
         })
     }
 
-    audioCtx = new AudioContext();
+    const audioCtx = new AudioContext();
     const panners = [
         newPanner(0,0,-3,0,0,1),    // center
         newPanner(-1,0,-2,1,0,-2),  // soft left
@@ -244,6 +244,50 @@ navigator.mediaDevices.getUserMedia({
             addVideoStream(position, userVideoStream);
         })
     })
+
+    handleSuccess = (stream) => {
+        myDisplayStream = stream;
+        myVideo.srcObject = myDisplayStream;
+        document.getElementById('all-videos').style.backgroundColor = "#312252";
+        participants.forEach(p => {
+            const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
+            const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
+            p.displayCall = displayCall;
+            displayCall.on('stream', userVideoStream => {
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[participants.length - 1])
+                    .connect(audioCtx.destination);
+                addVideoStream(position, userVideoStream);
+            });
+        });
+        setShareOn();
+        // detect when user stops sharing from chrome 'Stop Sharing' button
+        myDisplayStream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
+    }
+
+    endScreenShare = (event) => {
+        console.log('The user has ended sharing the screen');
+        participants.forEach(p => {
+            p.displayCall.close();
+            p.videoCall.close();
+        });
+        participants.forEach(p => {
+            const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
+            const pIdx = participants.findIndex((par) => { return par.id === p.id; });
+            const position = videoPositions[pIdx];
+            participants[pIdx].videoCall = videoCall;
+            videoCall.on('stream', userVideoStream => {
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[pIdx])
+                    .connect(audioCtx.destination);
+                addVideoStream(position, userVideoStream);
+            });
+        });
+        myVideo.srcObject = myVideoStream;
+        document.getElementById('all-videos').style.backgroundColor = "rgb(29, 29, 29)";
+        myDisplayStream.getTracks().forEach(track => track.stop());
+        setShareOff();
+    }
 
     // respondToDisplay = userVideoStream => {
     //     if (!call.metadata.isDisplayStream){
@@ -448,49 +492,8 @@ const setStopVideo = () => {
 // Screen Sharing
 // 
 
-function handleSuccess(stream) {
-    myDisplayStream = stream;
-    myVideo.srcObject = myDisplayStream;
-    document.getElementById('all-videos').style.backgroundColor = "#312252";
-    participants.forEach(p => {
-        const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
-        const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
-        p.displayCall = displayCall;
-        displayCall.on('stream', userVideoStream => {
-            audioCtx.createMediaStreamSource(userVideoStream)
-                .connect(panners[participants.length - 1])
-                .connect(audioCtx.destination);
-            addVideoStream(position, userVideoStream);
-        });
-    });
-    setShareOn();
-    // detect when user stops sharing from chrome 'Stop Sharing' button
-    myDisplayStream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
-}
-
-function endScreenShare(event) {
-    console.log('The user has ended sharing the screen');
-    participants.forEach(p => {
-        p.displayCall.close();
-        p.videoCall.close();
-    });
-    participants.forEach(p => {
-        const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
-        const pIdx = participants.findIndex((par) => { return par.id === p.id; });
-        const position = videoPositions[pIdx];
-        participants[pIdx].videoCall = videoCall;
-        videoCall.on('stream', userVideoStream => {
-            audioCtx.createMediaStreamSource(userVideoStream)
-                .connect(panners[pIdx])
-                .connect(audioCtx.destination);
-            addVideoStream(position, userVideoStream);
-        });
-    });
-    myVideo.srcObject = myVideoStream;
-    document.getElementById('all-videos').style.backgroundColor = "rgb(29, 29, 29)";
-    myDisplayStream.getTracks().forEach(track => track.stop());
-    setShareOff();
-}
+let handleSuccess;
+let endScreenShare;
 
 function handleError(error) {
     console.error(`getDisplayMedia error: ${error.name}`, error);
