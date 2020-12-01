@@ -16,6 +16,8 @@ class Participant {
         this.video = null;
         this.hand = null;
         this.name = null;
+        this.displayCall = null;
+        this.videoStream = null;
     }
 }
 
@@ -170,9 +172,10 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         call.answer(stream);
         let position = '';
+        let newPart;
 
         if (!call.metadata.isDisplayStream){
-            let newPart = new Participant();
+            newPart = new Participant();
             newPart.id = call.peer;
 
             // const video = document.createElement('video');
@@ -205,10 +208,19 @@ navigator.mediaDevices.getUserMedia({
                     .connect(audioCtx.destination);
             }
             console.log("On call");
+            newPart.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
+        })
+
+        call.on('close', () => {
+            // Assume it was due to screen sharing
+            console.log("Close screenshare connection");
+            participants.forEach(p => {
+                p.video.srcObject = p.videoStream;
+            });
         })
     })
 
@@ -253,6 +265,7 @@ navigator.mediaDevices.getUserMedia({
             // console.log(participants.length);
             audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
             console.log("User connected");
+            newPart.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
@@ -423,6 +436,7 @@ function handleSuccess(stream) {
     participants.forEach(p => {
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, isDisplayStream: true}});
         const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
+        p.displayCall = displayCall;
         displayCall.on('stream', userVideoStream => {
             if (!displayCall.metadata.isDisplayStream){
                 audioCtx.createMediaStreamSource(userVideoStream)
@@ -430,7 +444,7 @@ function handleSuccess(stream) {
                     .connect(audioCtx.destination);
             }
             addVideoStream(position, userVideoStream);
-        }); 
+        });
     });
     setShareOn();
     // detect when user stops sharing from chrome 'Stop Sharing' button
@@ -439,6 +453,9 @@ function handleSuccess(stream) {
 
 function endScreenShare(event) {
     console.log('The user has ended sharing the screen');
+    participants.forEach(p => {
+        p.displayCall.close();
+    })
     myVideo.srcObject = myVideoStream;
     myDisplayStream.getTracks().forEach(track => track.stop());
     shareButton.disabled = false;
