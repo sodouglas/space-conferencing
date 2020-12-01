@@ -201,8 +201,10 @@ navigator.mediaDevices.getUserMedia({
             const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
             position = videoPositions[pIndex];
             if (call.metadata.endingDisplayStream){
+                console.log("Enabling share");
                 shareButton.disabled = false;
             } else {
+                console.log("Disabling share");
                 shareButton.disabled = true;
             }
         }
