@@ -209,11 +209,11 @@ navigator.mediaDevices.getUserMedia({
                     .connect(panners[participants.length - 1])
                     .connect(audioCtx.destination);
             }
-            console.log("On call");
-            console.log(participants);
-            console.log(call.peer);
+            // console.log("On call");
+            // console.log(participants);
+            // console.log(call.peer);
             let part = participants.find(p => { return p.id === call.peer });
-            console.log(part);
+            // console.log(part);
             part.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
@@ -313,6 +313,12 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
+})
+
+socket.on('end-screenshare', (userId) => {
+    console.log("Close screenshare connection");
+    const part = participants.find((p) => { return p.id === userId; })
+    part.video.srcObject = part.videoStream;
 })
 
 const removeQuestionFromQueue = (userId) => {
@@ -461,7 +467,8 @@ function endScreenShare(event) {
     console.log('The user has ended sharing the screen');
     participants.forEach(p => {
         p.displayCall.close();
-    })
+    });
+    socket.emit('end-screenshare', ROOM_ID, peer.id);
     myVideo.srcObject = myVideoStream;
     myDisplayStream.getTracks().forEach(track => track.stop());
     shareButton.disabled = false;

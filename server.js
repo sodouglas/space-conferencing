@@ -53,6 +53,11 @@ io.on('connection', socket => {
         socket.join(roomId);
         socket.to(roomId).broadcast.emit('join-cancelled', userId);
     })
+
+    socket.on('end-screenshare', (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).broadcast.emit('end-screenshare', userId);
+    })
 })
 
 server.listen(process.env.PORT || 3030);
