@@ -203,8 +203,8 @@ navigator.mediaDevices.getUserMedia({
             const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
             position = videoPositions[pIndex];
             if (call.metadata.endingDisplayStream){
-                participants[pIdx].displayCall.close();
-                participants[pIdx].videoCall.close();
+                participants[pIndex].displayCall.close();
+                participants[pIndex].videoCall.close();
                 console.log("Enabling share");
                 shareButton.disabled = false;
                 shareButton.style.color = "white";
