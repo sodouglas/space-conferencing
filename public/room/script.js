@@ -212,7 +212,8 @@ navigator.mediaDevices.getUserMedia({
             console.log("On call");
             console.log(participants);
             console.log(call.peer);
-            let part = participants.find(p => { p.id === call.peer });
+            let part = participants.find(p => { return p.id === call.peer });
+            console.log(part);
             part.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
