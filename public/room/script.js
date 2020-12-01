@@ -63,27 +63,44 @@ let rejected = false; // Used for if someone joins a meeting that is full alread
 let respondToDisplay;
 let audioCtx;
 
+const addVideoStream = (position, stream) => {
+    const newVideo = document.getElementById(position + "-video");
+    const newImage = document.getElementById(position + "-image");
+    // Remove image and show video
+    newVideo.style.display = "flex";
+    newImage.style.display = "none";
+    // Add video stream
+    newVideo.srcObject = stream;
+    newVideo.addEventListener('loadedmetadata', () => {
+        newVideo.play();
+        newVideo.muted = true;
+    })
+    // console.log("Video appended");
+    // videoGrid.appendChild(video);
+    // videoGrid.appendChild(handIcon);
+}
+
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
     console.log("Adding user media");
-    const addVideoStream = (position, stream) => {
-        const newVideo = document.getElementById(position + "-video");
-        const newImage = document.getElementById(position + "-image");
-        // Remove image and show video
-        newVideo.style.display = "flex";
-        newImage.style.display = "none";
-        // Add video stream
-        newVideo.srcObject = stream;
-        newVideo.addEventListener('loadedmetadata', () => {
-            newVideo.play();
-            newVideo.muted = true;
-        })
-        // console.log("Video appended");
-        // videoGrid.appendChild(video);
-        // videoGrid.appendChild(handIcon);
-    }
+    // const addVideoStream = (position, stream) => {
+    //     const newVideo = document.getElementById(position + "-video");
+    //     const newImage = document.getElementById(position + "-image");
+    //     // Remove image and show video
+    //     newVideo.style.display = "flex";
+    //     newImage.style.display = "none";
+    //     // Add video stream
+    //     newVideo.srcObject = stream;
+    //     newVideo.addEventListener('loadedmetadata', () => {
+    //         newVideo.play();
+    //         newVideo.muted = true;
+    //     })
+    //     // console.log("Video appended");
+    //     // videoGrid.appendChild(video);
+    //     // videoGrid.appendChild(handIcon);
+    // }
 
     // const createHandIcon = () => {
     //     console.log("Creating child");
@@ -195,14 +212,14 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
-    respondToDisplay = userVideoStream => {
-        if (!call.metadata.isDisplayStream){
-            audioCtx.createMediaStreamSource(userVideoStream)
-                .connect(panners[participants.length - 1])
-                .connect(audioCtx.destination);
-        }
-        addVideoStream(position, userVideoStream);
-    }
+    // respondToDisplay = userVideoStream => {
+    //     if (!call.metadata.isDisplayStream){
+    //         audioCtx.createMediaStreamSource(userVideoStream)
+    //             .connect(panners[participants.length - 1])
+    //             .connect(audioCtx.destination);
+    //     }
+    //     addVideoStream(position, userVideoStream);
+    // }
 
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId, username) => {
