@@ -225,6 +225,12 @@ navigator.mediaDevices.getUserMedia({
                     .connect(panners[pIdx])
                     .connect(audioCtx.destination);
             }
+            if (!call.metadata.userJoining || !call.metadata.endingDisplayStream){
+                participants[pIdx].displayCall = call;
+            }
+            if (call.metadata.endingDisplayStream){
+                participants[pIdx].displayCall.close();
+            }
             // console.log("On call");
             // console.log(participants);
             // console.log(call.peer);
