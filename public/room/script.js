@@ -172,10 +172,9 @@ navigator.mediaDevices.getUserMedia({
     peer.on('call', call => {
         
         let position = '';
-        let newPart;
 
-        if (!call.metadata.isDisplayStream){
-            newPart = new Participant();
+        if (call.metadata.userJoining){
+            const newPart = new Participant();
             newPart.id = call.peer;
 
             // const video = document.createElement('video');
@@ -195,7 +194,8 @@ navigator.mediaDevices.getUserMedia({
             // Add new participant to the array
             participants.push(newPart);
         } else {
-            position = videoPositions[participants.findIndex((p) => { return p.id === call.peer; })];
+            const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
+            position = videoPositions[pIndex];
         }
 
         call.answer(stream);
@@ -204,9 +204,10 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            if (!call.metadata.isDisplayStream){
+            const pIdx = participants.findIndex((par) => { return par.id === call.peer; });
+            if (call.metadata.userJoining || call.metadata.endingDisplayStream){
                 audioCtx.createMediaStreamSource(userVideoStream)
-                    .connect(panners[participants.length - 1])
+                    .connect(panners[pIdx])
                     .connect(audioCtx.destination);
             }
             // console.log("On call");
@@ -219,14 +220,6 @@ navigator.mediaDevices.getUserMedia({
             //console.log(hostDestination.stream);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
-        })
-
-        call.on('close', () => {
-            // Assume it was due to screen sharing
-            console.log("Close screenshare connection");
-            participants.forEach(p => {
-                p.video.srcObject = p.videoStream;
-            });
         })
     })
 
@@ -248,7 +241,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME, isDisplayStream: false}});
+        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME, userJoining: true, endingDisplayStream: false}});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
@@ -313,12 +306,6 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
-})
-
-socket.on('end-screenshare', (userId) => {
-    console.log("Close screenshare connection");
-    const part = participants.find((p) => { return p.id === userId; })
-    part.video.srcObject = part.videoStream;
 })
 
 const removeQuestionFromQueue = (userId) => {
@@ -446,15 +433,13 @@ function handleSuccess(stream) {
     myDisplayStream = stream;
     myVideo.srcObject = myDisplayStream;
     participants.forEach(p => {
-        const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, isDisplayStream: true}});
+        const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
         const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
         p.displayCall = displayCall;
         displayCall.on('stream', userVideoStream => {
-            if (!displayCall.metadata.isDisplayStream){
-                audioCtx.createMediaStreamSource(userVideoStream)
-                    .connect(panners[participants.length - 1])
-                    .connect(audioCtx.destination);
-            }
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(panners[participants.length - 1])
+                .connect(audioCtx.destination);
             addVideoStream(position, userVideoStream);
         });
     });
@@ -468,7 +453,17 @@ function endScreenShare(event) {
     participants.forEach(p => {
         p.displayCall.close();
     });
-    socket.emit('end-screenshare', ROOM_ID, peer.id);
+    participants.forEach(p => {
+        const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
+        const pIdx = participants.findIndex((par) => { return par.id === p.id; });
+        const position = videoPositions[pIdx];
+        videoCall.on('stream', userVideoStream => {
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(panners[pIdx])
+                .connect(audioCtx.destination);
+            addVideoStream(position, userVideoStream);
+        });
+    });
     myVideo.srcObject = myVideoStream;
     myDisplayStream.getTracks().forEach(track => track.stop());
     shareButton.disabled = false;
@@ -477,7 +472,7 @@ function endScreenShare(event) {
 
 function handleError(error) {
     console.error(`getDisplayMedia error: ${error.name}`, error);
-  }
+}
 
 shareButton.addEventListener('click', () => {
     if (shareButton.querySelector(".fa-laptop").style.color === 'green'){
