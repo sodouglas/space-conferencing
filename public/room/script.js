@@ -170,7 +170,7 @@ navigator.mediaDevices.getUserMedia({
     })
 
     peer.on('call', call => {
-        call.answer(stream);
+        
         let position = '';
         let newPart;
 
@@ -198,6 +198,8 @@ navigator.mediaDevices.getUserMedia({
             position = videoPositions[participants.findIndex((p) => { return p.id === call.peer; })];
         }
 
+        call.answer(stream);
+
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
@@ -208,6 +210,7 @@ navigator.mediaDevices.getUserMedia({
                     .connect(audioCtx.destination);
             }
             console.log("On call");
+
             let part = participants.find(p => { p.id === call.peer });
             part.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
