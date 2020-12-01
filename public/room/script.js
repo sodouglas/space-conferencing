@@ -455,7 +455,7 @@ const raiseLowerHand = () => {
 
 const setLowerHand = () => {
     const html = `
-        <i class="far fa-hand-paper fa-lg"></i>
+        <i class="stop far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
     removeQuestionFromQueue(peer.id);
