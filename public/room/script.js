@@ -60,6 +60,7 @@ let handRaised = false;
 let participants = [];
 let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
+let respondToDisplay;
 
 navigator.mediaDevices.getUserMedia({
     video: true,
@@ -150,26 +151,31 @@ navigator.mediaDevices.getUserMedia({
 
     peer.on('call', call => {
         call.answer(stream);
+        let position = '';
 
-        let newPart = new Participant();
-        newPart.id = call.peer;
+        if (!call.metadata.isDisplayStream){
+            let newPart = new Participant();
+            newPart.id = call.peer;
 
-        // const video = document.createElement('video');
-        // newPart.video = video;
+            // const video = document.createElement('video');
+            // newPart.video = video;
 
-        let position = videoPositions[participants.length];
-        newPart.video = document.getElementById(position + "-video");
+            let position = videoPositions[participants.length];
+            newPart.video = document.getElementById(position + "-video");
 
-        // Create raised hand icon
-        newPart.hand = document.getElementById(position + "-hand");
+            // Create raised hand icon
+            newPart.hand = document.getElementById(position + "-hand");
 
-        // Add participant name
-        console.log(call.metadata);
-        document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
-        newPart.name = call.metadata.callerName;
+            // Add participant name
+            console.log(call.metadata);
+            document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
+            newPart.name = call.metadata.callerName;
 
-        // Add new participant to the array
-        participants.push(newPart);
+            // Add new participant to the array
+            participants.push(newPart);
+        } else {
+            position = videoPositions[participants.findIndex((p) => { return p.id === call.peer; })];
+        }
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
@@ -184,6 +190,11 @@ navigator.mediaDevices.getUserMedia({
         })
     })
 
+    respondToDisplay = userVideoStream => {
+        audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+        addVideoStream(position, userVideoStream);
+    }
+
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId, username) => {
         // console.log(userId);
@@ -193,7 +204,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
+        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME, isDisplayStream: false}});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
@@ -219,8 +230,6 @@ navigator.mediaDevices.getUserMedia({
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
-
-
         })
     })
 
@@ -383,12 +392,15 @@ const myVideo = document.querySelector('#bottom-center-video');
 
 function handleSuccess(stream) {
     shareButton.disabled = true;
-    // const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
     myDisplayStream = stream;
     myVideo.srcObject = myDisplayStream;
+    participants.forEach(p => {
+        const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, isDisplayStream: true}});
+        displayCall.on('stream', respondToDisplay); 
+    });
     setShareOn();
     // detect when user stops sharing from chrome 'Stop Sharing' button
-    stream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
+    myDisplayStream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
 }
 
 function endScreenShare(event) {
