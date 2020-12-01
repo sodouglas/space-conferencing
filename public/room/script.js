@@ -532,7 +532,7 @@ if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {
 
 const setShareOn = () => {
     const html = `
-        <i class="fas fa-laptop fa-lg" style="color:"#2be028"></i>
+        <i class="fas fa-laptop fa-lg" style="color:#2be028"></i>
     `
     shareButton.innerHTML = html;
 }
