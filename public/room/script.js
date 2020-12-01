@@ -55,10 +55,17 @@ class Question {
     }
 }
 
+class Analyzer {
+    constructor(audioCtx) {
+        this.analyzer = audioCtx.createAnalyser();
+        this.analyzer.fftSize = 1024;
+        this.smoothing = 0;
+    }
+}
+
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
 let myDisplayStream;
-let participantCount = 0;
 let handRaised = false;
 let participants = [];
 let questionQueue = [];
@@ -143,6 +150,51 @@ navigator.mediaDevices.getUserMedia({
         newPanner(-3,0,-1,3,0,1),   // hard left
         newPanner(3,0,1,-3,0,-1)    // hard right
     ];
+    const analyzers = [
+        new Analyzer(audioCtx),  // center
+        new Analyzer(audioCtx),  // soft left
+        new Analyzer(audioCtx),  // soft right
+        new Analyzer(audioCtx),  // hard left
+        new Analyzer(audioCtx)   // hard right
+    ];
+
+    const myAudio = audioCtx.createMediaStreamSource(stream);
+    const myAnalyzer = new Analyzer(audioCtx);
+    myAudio.connect(myAnalyzer.analyzer);
+
+    const processAudioVolume = (analyzer, pos) => {
+        const bufferLength = analyzer.analyzer.frequencyBinCount;
+        var dataArray = new Uint8Array(bufferLength);
+        analyzer.analyzer.getByteTimeDomainData(dataArray);
+        var meanSquared = 0;
+        dataArray.forEach(d => {
+            meanSquared += (d - 128) * (d - 128);
+        });
+        meanSquared = meanSquared / bufferLength;
+        // console.log(meanSquared);
+        // Magic number is the threshold for speech
+        if (meanSquared > 100){
+            document.getElementById(pos + '-video').style.border = '4px solid #46de40'
+        } else {
+            analyzer.smoothing += 1;
+            if (analyzer.smoothing == 50){
+                document.getElementById(pos + '-video').style.border = '0px';
+                analyzer.smoothing = 0;
+            }
+        }
+    }
+    const whosTalking = () => {
+        for (i = 0; i < participants.length; i++){
+            // console.log("Participant")
+            processAudioVolume(analyzers[i], videoPositions[i]);
+        }
+        // console.log("Host");
+        processAudioVolume(myAnalyzer, "bottom-center");
+        window.requestAnimationFrame(whosTalking);
+    }
+
+    whosTalking();
+
     const handAudioElement = document.createElement("audio");
     handAudioElement.src = "space_notif_final.wav";
     const handAudioSrc = audioCtx.createMediaElementSource(handAudioElement);
@@ -226,6 +278,7 @@ navigator.mediaDevices.getUserMedia({
             const pIdx = participants.findIndex((par) => { return par.id === call.peer; });
             if (call.metadata.userJoining || call.metadata.endingDisplayStream){
                 audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(analyzers[pIdx].analyzer)
                     .connect(panners[pIdx])
                     .connect(audioCtx.destination);
             }
@@ -329,7 +382,10 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //let videoTrack = userVideoStream.getVideoTracks()[0];
             // console.log(participants.length);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(analyzers[participants.length - 1].analyzer)
+                .connect(panners[participants.length - 1])
+                .connect(audioCtx.destination);
             console.log("User connected");
             newPart.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
@@ -373,6 +429,9 @@ navigator.mediaDevices.getUserMedia({
             }
         }
     })
+
+    muteUnmute();
+    playStop();
 })
 
 const removeQuestionFromQueue = (userId) => {
@@ -409,6 +468,7 @@ socket.on('user-disconnected', userId => {
         const discUser = participants[userIndex];
         discUser.video.style.display = "none";
         document.getElementById(videoPositions[userIndex] + '-image').style.display = "flex";
+        document.getElementById(videoPositions[userIndex] + '-name').innerHTML = "";
         participants.splice(userIndex, 1);
         // console.log("After splice");
         // console.log(participants);
@@ -579,7 +639,7 @@ const raiseLowerHand = () => {
 
 const setLowerHand = () => {
     const html = `
-        <i class="far fa-hand-paper fa-lg"></i>
+        <i class="stop far fa-hand-paper fa-lg"></i>
     `
     document.querySelector('.main__hand_button').innerHTML = html;
     removeQuestionFromQueue(peer.id);
@@ -624,4 +684,12 @@ const leaveMeeting = () => {
     if (confirm("Are you sure you want to leave the meeting?")){
         window.location.href = '/thank-you'
     }
+}
+
+const copyRoomId = () => {
+    navigator.clipboard.writeText(ROOM_ID);
+    document.getElementById("copy-button").innerHTML = "Copied!";
+    setTimeout(() => {
+        document.getElementById("copy-button").innerHTML = "Copy ID to clipboard"
+    }, 2000);
 }
