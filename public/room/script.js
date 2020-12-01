@@ -269,7 +269,7 @@ navigator.mediaDevices.getUserMedia({
             }
         }
 
-        call.answer(stream);
+        call.answer(myVideoStream);
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
