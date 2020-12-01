@@ -422,6 +422,7 @@ function handleSuccess(stream) {
     myVideo.srcObject = myDisplayStream;
     participants.forEach(p => {
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, isDisplayStream: true}});
+        const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
         displayCall.on('stream', userVideoStream => {
             if (!displayCall.metadata.isDisplayStream){
                 audioCtx.createMediaStreamSource(userVideoStream)
