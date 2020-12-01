@@ -254,10 +254,10 @@ navigator.mediaDevices.getUserMedia({
             const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
             p.displayCall = displayCall;
             displayCall.on('stream', userVideoStream => {
-                audioCtx.createMediaStreamSource(userVideoStream)
-                    .connect(panners[participants.length - 1])
-                    .connect(audioCtx.destination);
-                addVideoStream(position, userVideoStream);
+                // audioCtx.createMediaStreamSource(userVideoStream)
+                //     .connect(panners[participants.length - 1])
+                //     .connect(audioCtx.destination);
+                // addVideoStream(position, userVideoStream);
             });
         });
         setShareOn();
