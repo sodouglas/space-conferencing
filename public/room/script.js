@@ -203,9 +203,13 @@ navigator.mediaDevices.getUserMedia({
             if (call.metadata.endingDisplayStream){
                 console.log("Enabling share");
                 shareButton.disabled = false;
+                shareButton.style.color = "white";
+                shareButton.style.cursor = "pointer";
             } else {
                 console.log("Disabling share");
                 shareButton.disabled = true;
+                shareButton.style.color = "black";
+                shareButton.style.cursor = "default";
             }
         }
 
@@ -487,13 +491,15 @@ function handleError(error) {
 }
 
 shareButton.addEventListener('click', () => {
-    if (shareButton.querySelector(".fa-laptop").style.color === 'rgb(43, 224, 40)'){
-        endScreenShare('');
-    } else {
-        navigator.mediaDevices.getDisplayMedia({
-            video: { cursor: "always" },
-            audio: { echoCancellation: true, noiseSuppression: true }
-        }).then(handleSuccess, handleError);
+    if (!shareButton.disabled){
+        if (shareButton.querySelector(".fa-laptop").style.color === 'rgb(43, 224, 40)'){
+            endScreenShare('');
+        } else {
+            navigator.mediaDevices.getDisplayMedia({
+                video: { cursor: "always" },
+                audio: { echoCancellation: true, noiseSuppression: true }
+            }).then(handleSuccess, handleError);
+        }
     }
 });
 
