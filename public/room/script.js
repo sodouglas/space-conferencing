@@ -61,6 +61,7 @@ let participants = [];
 let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
 let respondToDisplay;
+let audioCtx;
 
 navigator.mediaDevices.getUserMedia({
     video: true,
@@ -110,7 +111,7 @@ navigator.mediaDevices.getUserMedia({
         })
     }
 
-    const audioCtx = new AudioContext();
+    audioCtx = new AudioContext();
     const panners = [
         newPanner(0,0,-3,0,0,1),    // center
         newPanner(-1,0,-2,1,0,-2),  // soft left
@@ -430,7 +431,14 @@ shareButton.addEventListener('click', () => {
         navigator.mediaDevices.getDisplayMedia({
             video: { cursor: "always" },
             audio: { echoCancellation: true, noiseSuppression: true }
-        }).then(handleSuccess, handleError);
+        }).then(handleSuccess, userVideoStream => {
+            if (!call.metadata.isDisplayStream){
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[participants.length - 1])
+                    .connect(audioCtx.destination);
+            }
+            addVideoStream(position, userVideoStream);    
+        });
     }
 });
 
