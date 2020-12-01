@@ -485,7 +485,7 @@ function handleError(error) {
 }
 
 shareButton.addEventListener('click', () => {
-    if (shareButton.querySelector(".fa-laptop").style.color === 'green'){
+    if (shareButton.querySelector(".fa-laptop").style.color === '#2be028'){
         endScreenShare('');
     } else {
         navigator.mediaDevices.getDisplayMedia({
@@ -532,7 +532,7 @@ if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {
 
 const setShareOn = () => {
     const html = `
-        <i class="fas fa-laptop fa-lg" style="color:green"></i>
+        <i class="fas fa-laptop fa-lg" style="color:"#2be028"></i>
     `
     shareButton.innerHTML = html;
 }
