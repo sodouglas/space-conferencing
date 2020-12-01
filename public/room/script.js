@@ -17,6 +17,7 @@ class Participant {
         this.hand = null;
         this.name = null;
         this.displayCall = null;
+        this.videoCall = null;
         this.videoStream = null;
     }
 }
@@ -195,6 +196,7 @@ navigator.mediaDevices.getUserMedia({
             document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
             newPart.name = call.metadata.callerName;
 
+            newPart.videoCall = call;
             // Add new participant to the array
             participants.push(newPart);
         } else {
@@ -227,6 +229,7 @@ navigator.mediaDevices.getUserMedia({
             }
             if (!call.metadata.userJoining && !call.metadata.endingDisplayStream){
                 participants[pIdx].displayCall = call;
+                participants[pIdx].videoCall.close();
             }
             if (call.metadata.endingDisplayStream){
                 participants[pIdx].displayCall.close();
@@ -278,6 +281,7 @@ navigator.mediaDevices.getUserMedia({
         document.getElementById(position + "-name").innerHTML = username;
         newPart.name = username;
 
+        newPart.videoCall = call;
         participants.push(newPart);
 
         call.on('stream', userVideoStream => {
@@ -446,13 +450,12 @@ const setStopVideo = () => {
 // Screen Sharing
 // 
 
-
-
 function handleSuccess(stream) {
     myDisplayStream = stream;
     myVideo.srcObject = myDisplayStream;
     document.getElementById('all-videos').style.backgroundColor = "#312252";
     participants.forEach(p => {
+        p.videoCall.close();
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
         const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
         p.displayCall = displayCall;
@@ -477,6 +480,7 @@ function endScreenShare(event) {
         const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
         const pIdx = participants.findIndex((par) => { return par.id === p.id; });
         const position = videoPositions[pIdx];
+        participants[pIdx].videoCall = videoCall;
         videoCall.on('stream', userVideoStream => {
             audioCtx.createMediaStreamSource(userVideoStream)
                 .connect(panners[pIdx])
