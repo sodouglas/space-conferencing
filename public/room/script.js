@@ -65,6 +65,10 @@ let rejected = false; // Used for if someone joins a meeting that is full alread
 let respondToDisplay;
 let audioCtx;
 
+// Screen share stuff
+const shareButton = document.querySelector('.main__share_button');
+const myVideo = document.querySelector('#bottom-center-video');
+
 const addVideoStream = (position, stream) => {
     const newVideo = document.getElementById(position + "-video");
     const newImage = document.getElementById(position + "-image");
@@ -196,6 +200,11 @@ navigator.mediaDevices.getUserMedia({
         } else {
             const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
             position = videoPositions[pIndex];
+            if (call.metadata.endingDisplayStream){
+                shareButton.disabled = false;
+            } else {
+                shareButton.disabled = true;
+            }
         }
 
         call.answer(stream);
@@ -425,13 +434,13 @@ const setStopVideo = () => {
 // Screen Sharing
 // 
 
-const shareButton = document.querySelector('.main__share_button');
-const myVideo = document.querySelector('#bottom-center-video');
+
 
 function handleSuccess(stream) {
     shareButton.disabled = true;
     myDisplayStream = stream;
     myVideo.srcObject = myDisplayStream;
+    document.getElementById('all-videos').style.backgroundColor = "rgb(58, 36, 83)";
     participants.forEach(p => {
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
         const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
@@ -465,6 +474,7 @@ function endScreenShare(event) {
         });
     });
     myVideo.srcObject = myVideoStream;
+    document.getElementById('all-videos').style.backgroundColor = "rgb(29, 29, 29)";
     myDisplayStream.getTracks().forEach(track => track.stop());
     shareButton.disabled = false;
     setShareOff();

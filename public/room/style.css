@@ -204,3 +204,7 @@ h2 {
     color: white;
     font-size: 20px;
 }
+
+button:disabled {
+    color: black;
+}
