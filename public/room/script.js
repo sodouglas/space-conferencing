@@ -54,6 +54,7 @@ class Question {
 
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
+let myDisplayStream;
 let participantCount = 0;
 let handRaised = false;
 let participants = [];
@@ -378,24 +379,24 @@ const setStopVideo = () => {
 // 
 
 const shareButton = document.querySelector('.main__share_button');
+const myVideo = document.querySelector('#bottom-center-video');
 
 function handleSuccess(stream) {
     shareButton.disabled = true;
-    const video = document.querySelector('#bottom-center-video');
-    video.srcObject = stream;
+    // const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
+    myDisplayStream = stream;
+    myVideo.srcObject = myDisplayStream;
     setShareOn();
-    
-    // detect when user stops sharing from SPACE UI
-    shareButton.addEventListener('click', endScreenShare, false);      // TODO: (BUG) Loads screenshare again
     // detect when user stops sharing from chrome 'Stop Sharing' button
     stream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
+}
 
-    function endScreenShare(event) {
-        console.error('The user has ended sharing the screen');
-        video.srcObject = myVideoStream;
-        shareButton.disabled = false;
-        setShareOff();
-    }
+function endScreenShare(event) {
+    console.log('The user has ended sharing the screen');
+    myVideo.srcObject = myVideoStream;
+    myDisplayStream.getTracks().forEach(track => track.stop());
+    shareButton.disabled = false;
+    setShareOff();
 }
 
 function handleError(error) {
@@ -403,10 +404,14 @@ function handleError(error) {
   }
 
 shareButton.addEventListener('click', () => {
-    navigator.mediaDevices.getDisplayMedia({
-        video: { cursor: "always" },
-        audio: { echoCancellation: true, noiseSuppression: true }
-    }).then(handleSuccess, handleError);
+    if (shareButton.querySelector(".fa-laptop").style.color === 'green'){
+        endScreenShare('');
+    } else {
+        navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: "always" },
+            audio: { echoCancellation: true, noiseSuppression: true }
+        }).then(handleSuccess, handleError);
+    }
 });
 
 if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {
