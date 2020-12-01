@@ -405,7 +405,14 @@ function handleSuccess(stream) {
     myVideo.srcObject = myDisplayStream;
     participants.forEach(p => {
         const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, isDisplayStream: true}});
-        displayCall.on('stream', respondToDisplay); 
+        displayCall.on('stream', userVideoStream => {
+            if (!displayCall.metadata.isDisplayStream){
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[participants.length - 1])
+                    .connect(audioCtx.destination);
+            }
+            addVideoStream(position, userVideoStream);
+        }); 
     });
     setShareOn();
     // detect when user stops sharing from chrome 'Stop Sharing' button
@@ -431,14 +438,7 @@ shareButton.addEventListener('click', () => {
         navigator.mediaDevices.getDisplayMedia({
             video: { cursor: "always" },
             audio: { echoCancellation: true, noiseSuppression: true }
-        }).then(handleSuccess, userVideoStream => {
-            if (!call.metadata.isDisplayStream){
-                audioCtx.createMediaStreamSource(userVideoStream)
-                    .connect(panners[participants.length - 1])
-                    .connect(audioCtx.destination);
-            }
-            addVideoStream(position, userVideoStream);    
-        });
+        }).then(handleSuccess, handleError);
     }
 });
 
