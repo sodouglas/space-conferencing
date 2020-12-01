@@ -443,7 +443,6 @@ const setStopVideo = () => {
 
 
 function handleSuccess(stream) {
-    shareButton.disabled = true;
     myDisplayStream = stream;
     myVideo.srcObject = myDisplayStream;
     document.getElementById('all-videos').style.backgroundColor = "#312252";
@@ -482,7 +481,6 @@ function endScreenShare(event) {
     myVideo.srcObject = myVideoStream;
     document.getElementById('all-videos').style.backgroundColor = "rgb(29, 29, 29)";
     myDisplayStream.getTracks().forEach(track => track.stop());
-    shareButton.disabled = false;
     setShareOff();
 }
 
