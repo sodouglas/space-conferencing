@@ -160,7 +160,7 @@ navigator.mediaDevices.getUserMedia({
             // const video = document.createElement('video');
             // newPart.video = video;
 
-            let position = videoPositions[participants.length];
+            position = videoPositions[participants.length];
             newPart.video = document.getElementById(position + "-video");
 
             // Create raised hand icon
