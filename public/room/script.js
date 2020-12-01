@@ -218,8 +218,8 @@ navigator.mediaDevices.getUserMedia({
                 <span class="main__spatial_text">3D On</span>
             `
             setPandO(panners[0],0,0,-3,0,0,1),    // center
-            setPandO(panners[1],-1,0,-2,1,0,-2),  // soft left
-            setPandO(panners[2],1,0,-2,-1,0,2),   // soft right
+            setPandO(panners[1],-1.5,0,-2,1.5,0,-2),  // soft left
+            setPandO(panners[2],1.5,0,-2,-1.5,0,2),   // soft right
             setPandO(panners[3],-3,0,-1,3,0,1),   // hard left
             setPandO(panners[4],3,0,1,-3,0,-1)    // hard right
             document.querySelector('.main__spatial_button').innerHTML = html;
