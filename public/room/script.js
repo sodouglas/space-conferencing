@@ -225,7 +225,7 @@ navigator.mediaDevices.getUserMedia({
                     .connect(panners[pIdx])
                     .connect(audioCtx.destination);
             }
-            if (!call.metadata.userJoining || !call.metadata.endingDisplayStream){
+            if (!call.metadata.userJoining && !call.metadata.endingDisplayStream){
                 participants[pIdx].displayCall = call;
             }
             if (call.metadata.endingDisplayStream){
