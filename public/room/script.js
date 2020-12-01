@@ -181,7 +181,11 @@ navigator.mediaDevices.getUserMedia({
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+            if (!call.metadata.isDisplayStream){
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[participants.length - 1])
+                    .connect(audioCtx.destination);
+            }
             console.log("On call");
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
@@ -191,7 +195,11 @@ navigator.mediaDevices.getUserMedia({
     })
 
     respondToDisplay = userVideoStream => {
-        audioCtx.createMediaStreamSource(userVideoStream).connect(panners[participants.length - 1]).connect(audioCtx.destination);
+        if (!call.metadata.isDisplayStream){
+            audioCtx.createMediaStreamSource(userVideoStream)
+                .connect(panners[participants.length - 1])
+                .connect(audioCtx.destination);
+        }
         addVideoStream(position, userVideoStream);
     }
 
