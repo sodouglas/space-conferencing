@@ -210,7 +210,8 @@ navigator.mediaDevices.getUserMedia({
                     .connect(audioCtx.destination);
             }
             console.log("On call");
-
+            console.log(participants);
+            console.log(call.peer);
             let part = participants.find(p => { p.id === call.peer });
             part.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
