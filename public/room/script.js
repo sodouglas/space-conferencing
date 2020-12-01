@@ -485,7 +485,7 @@ function handleError(error) {
 }
 
 shareButton.addEventListener('click', () => {
-    if (shareButton.querySelector(".fa-laptop").style.color === '#2be028'){
+    if (shareButton.querySelector(".fa-laptop").style.color === '2be028'){
         endScreenShare('');
     } else {
         navigator.mediaDevices.getDisplayMedia({
