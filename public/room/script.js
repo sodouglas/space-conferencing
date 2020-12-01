@@ -227,7 +227,7 @@ navigator.mediaDevices.getUserMedia({
     })
 
     peer.on('call', call => {
-        
+        console.log("Received call");
         let position = '';
 
         if (call.metadata.userJoining){
@@ -304,9 +304,10 @@ navigator.mediaDevices.getUserMedia({
         document.getElementById('all-videos').style.backgroundColor = "#312252";
         participants.forEach(p => {
             const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
-            const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
+            // const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
             p.displayCall = displayCall;
             displayCall.on('stream', userVideoStream => {
+                console.log(userVideoStream);
                 // audioCtx.createMediaStreamSource(userVideoStream)
                 //     .connect(panners[participants.length - 1])
                 //     .connect(audioCtx.destination);
