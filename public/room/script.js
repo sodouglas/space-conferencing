@@ -16,6 +16,9 @@ class Participant {
         this.video = null;
         this.hand = null;
         this.name = null;
+        this.displayCall = null;
+        this.videoCall = null;
+        this.videoStream = null;
     }
 }
 
@@ -62,32 +65,56 @@ class Analyzer {
 
 const videoPositions = ['top-center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
 let myVideoStream;
+let myDisplayStream;
 let handRaised = false;
 let participants = [];
 let questionQueue = [];
 let rejected = false; // Used for if someone joins a meeting that is full already
+let respondToDisplay;
+// let audioCtx;
+
+// Screen share stuff
+const shareButton = document.querySelector('.main__share_button');
+const myVideo = document.querySelector('#bottom-center-video');
+
+const addVideoStream = (position, stream) => {
+    const newVideo = document.getElementById(position + "-video");
+    const newImage = document.getElementById(position + "-image");
+    // Remove image and show video
+    newVideo.style.display = "flex";
+    newImage.style.display = "none";
+    // Add video stream
+    newVideo.srcObject = stream;
+    newVideo.addEventListener('loadedmetadata', () => {
+        newVideo.play();
+        newVideo.muted = true;
+    })
+    // console.log("Video appended");
+    // videoGrid.appendChild(video);
+    // videoGrid.appendChild(handIcon);
+}
 
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
     console.log("Adding user media");
-    const addVideoStream = (position, stream) => {
-        const newVideo = document.getElementById(position + "-video");
-        const newImage = document.getElementById(position + "-image");
-        // Remove image and show video
-        newVideo.style.display = "flex";
-        newImage.style.display = "none";
-        // Add video stream
-        newVideo.srcObject = stream;
-        newVideo.addEventListener('loadedmetadata', () => {
-            newVideo.play();
-            newVideo.muted = true;
-        })
-        // console.log("Video appended");
-        // videoGrid.appendChild(video);
-        // videoGrid.appendChild(handIcon);
-    }
+    // const addVideoStream = (position, stream) => {
+    //     const newVideo = document.getElementById(position + "-video");
+    //     const newImage = document.getElementById(position + "-image");
+    //     // Remove image and show video
+    //     newVideo.style.display = "flex";
+    //     newImage.style.display = "none";
+    //     // Add video stream
+    //     newVideo.srcObject = stream;
+    //     newVideo.addEventListener('loadedmetadata', () => {
+    //         newVideo.play();
+    //         newVideo.muted = true;
+    //     })
+    //     // console.log("Video appended");
+    //     // videoGrid.appendChild(video);
+    //     // videoGrid.appendChild(handIcon);
+    // }
 
     // const createHandIcon = () => {
     //     console.log("Creating child");
@@ -200,43 +227,129 @@ navigator.mediaDevices.getUserMedia({
     })
 
     peer.on('call', call => {
+        
+        let position = '';
+
+        if (call.metadata.userJoining){
+            const newPart = new Participant();
+            newPart.id = call.peer;
+
+            // const video = document.createElement('video');
+            // newPart.video = video;
+
+            position = videoPositions[participants.length];
+            newPart.video = document.getElementById(position + "-video");
+
+            // Create raised hand icon
+            newPart.hand = document.getElementById(position + "-hand");
+
+            // Add participant name
+            console.log(call.metadata);
+            document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
+            newPart.name = call.metadata.callerName;
+
+            newPart.videoCall = call;
+            // Add new participant to the array
+            participants.push(newPart);
+        } else {
+            const pIndex = participants.findIndex((p) => { return p.id === call.peer; });
+            position = videoPositions[pIndex];
+            if (call.metadata.endingDisplayStream){
+                participants[pIndex].displayCall.close();
+                participants[pIndex].videoCall.close();
+                console.log("Enabling share");
+                shareButton.disabled = false;
+                shareButton.style.color = "white";
+                shareButton.style.cursor = "pointer";
+            } else {
+                console.log("Disabling share");
+                shareButton.disabled = true;
+                shareButton.style.color = "black";
+                shareButton.style.cursor = "default";
+            }
+        }
+
         call.answer(stream);
-
-        let newPart = new Participant();
-        newPart.id = call.peer;
-
-        // const video = document.createElement('video');
-        // newPart.video = video;
-
-        let position = videoPositions[participants.length];
-        newPart.video = document.getElementById(position + "-video");
-
-        // Create raised hand icon
-        newPart.hand = document.getElementById(position + "-hand");
-
-        // Add participant name
-        console.log(call.metadata);
-        document.getElementById(position + "-name").innerHTML = call.metadata.callerName;
-        newPart.name = call.metadata.callerName;
-
-        // Add new participant to the array
-        participants.push(newPart);
 
         // add new user's video stream to our screen
         call.on('stream', userVideoStream => {
             //console.log(userVideoStream);
             //audioCtx.createMediaStreamSource(userVideoStream).connect(panners[0]).connect(hostDestination);
-            audioCtx.createMediaStreamSource(userVideoStream)
-                .connect(analyzers[participants.length - 1].analyzer)
-                .connect(panners[participants.length - 1])
-                .connect(audioCtx.destination);
-            console.log("On call");
+            const pIdx = participants.findIndex((par) => { return par.id === call.peer; });
+            if (call.metadata.userJoining || call.metadata.endingDisplayStream){
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(analyzers[pIdx].analyzer)
+                    .connect(panners[pIdx])
+                    .connect(audioCtx.destination);
+            }
+            if (!call.metadata.userJoining && !call.metadata.endingDisplayStream){
+                participants[pIdx].displayCall = call;
+            }
+            // console.log("On call");
+            // console.log(participants);
+            // console.log(call.peer);
+            let part = participants.find(p => { return p.id === call.peer });
+            // console.log(part);
+            part.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             //console.log(hostDestination.stream);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
         })
     })
+
+    handleSuccess = (stream) => {
+        myDisplayStream = stream;
+        myVideo.srcObject = myDisplayStream;
+        document.getElementById('all-videos').style.backgroundColor = "#312252";
+        participants.forEach(p => {
+            const displayCall = peer.call(p.id, myDisplayStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: false}});
+            const position = videoPositions[participants.findIndex((par) => { return par.id === p.id; })];
+            p.displayCall = displayCall;
+            displayCall.on('stream', userVideoStream => {
+                // audioCtx.createMediaStreamSource(userVideoStream)
+                //     .connect(panners[participants.length - 1])
+                //     .connect(audioCtx.destination);
+                // addVideoStream(position, userVideoStream);
+            });
+        });
+        setShareOn();
+        // detect when user stops sharing from chrome 'Stop Sharing' button
+        myDisplayStream.getVideoTracks()[0].addEventListener('ended', endScreenShare, false);
+    }
+
+    endScreenShare = (event) => {
+        console.log('The user has ended sharing the screen');
+        participants.forEach(p => {
+            p.displayCall.close();
+            p.videoCall.close();
+        });
+        participants.forEach(p => {
+            const videoCall = peer.call(p.id, myVideoStream, {metadata: {callerName: USER_NAME, userJoining: false, endingDisplayStream: true}});
+            const pIdx = participants.findIndex((par) => { return par.id === p.id; });
+            const position = videoPositions[pIdx];
+            participants[pIdx].videoCall = videoCall;
+            videoCall.on('stream', userVideoStream => {
+                audioCtx.createMediaStreamSource(userVideoStream)
+                    .connect(panners[pIdx])
+                    .connect(audioCtx.destination);
+                addVideoStream(position, userVideoStream);
+            });
+        });
+        myVideo.srcObject = myVideoStream;
+        document.getElementById('all-videos').style.backgroundColor = "rgb(29, 29, 29)";
+        myDisplayStream.getTracks().forEach(track => track.stop());
+        setShareOff();
+    }
+
+    // respondToDisplay = userVideoStream => {
+    //     if (!call.metadata.isDisplayStream){
+    //         audioCtx.createMediaStreamSource(userVideoStream)
+    //             .connect(panners[participants.length - 1])
+    //             .connect(audioCtx.destination);
+    //     }
+    //     addVideoStream(position, userVideoStream);
+    // }
 
     // Move connectToNewUser over here to utilize the audioCtx
     socket.on('user-connected', (userId, username) => {
@@ -247,7 +360,7 @@ navigator.mediaDevices.getUserMedia({
             socket.emit('room-full', ROOM_ID, userId);
             return;
         }
-        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME}});
+        const call = peer.call(userId, stream, {metadata: {callerName: USER_NAME, userJoining: true, endingDisplayStream: false}});
         newPart = new Participant();
         newPart.id = userId;
         // const dataConn = peer.connect(userId);
@@ -263,6 +376,7 @@ navigator.mediaDevices.getUserMedia({
         document.getElementById(position + "-name").innerHTML = username;
         newPart.name = username;
 
+        newPart.videoCall = call;
         participants.push(newPart);
 
         call.on('stream', userVideoStream => {
@@ -273,6 +387,7 @@ navigator.mediaDevices.getUserMedia({
                 .connect(panners[participants.length - 1])
                 .connect(audioCtx.destination);
             console.log("User connected");
+            newPart.videoStream = userVideoStream;
             //hostDestination.stream.addTrack(videoTrack);
             // addVideoStream(position, userVideoStream, newPart.hand);
             addVideoStream(position, userVideoStream);
@@ -433,8 +548,77 @@ const setStopVideo = () => {
     document.querySelector('.main__video_button').innerHTML = html;
 }
 
-const screenShare = () => {
-    window.confirm("This feature has not been implemented in the alpha system")
+//
+// Screen Sharing
+// 
+
+let handleSuccess;
+let endScreenShare;
+
+function handleError(error) {
+    console.error(`getDisplayMedia error: ${error.name}`, error);
+}
+
+shareButton.addEventListener('click', () => {
+    if (!shareButton.disabled){
+        if (shareButton.querySelector(".fa-laptop").style.color === 'rgb(43, 224, 40)'){
+            endScreenShare('');
+        } else {
+            navigator.mediaDevices.getDisplayMedia({
+                video: { cursor: "always" },
+                audio: { echoCancellation: true, noiseSuppression: true }
+            }).then(handleSuccess, handleError);
+        }
+    }
+});
+
+if ((navigator.mediaDevices && 'getDisplayMedia' in navigator.mediaDevices)) {
+    shareButton.disabled = false;
+} else {
+    console.error('getDisplayMedia is not supported');
+}
+
+// const screenShare = () => {
+//     // BUG: macOS must enable permissions...
+//     // System Preferences -> Security & Privacy -> Privacy -> Screen Recording -> Enable Google Chrome (or browser of choice) 
+//     // if (sharebutton.enabled = false) {
+//     //     // enable screensharing
+        
+//     // } else {
+//     //     // disable screensharing
+//     // }
+
+//     navigator.mediaDevices.getDisplayMedia({
+//         video: { cursor: "always" },
+//         audio: { echoCancellation: true, noiseSuppression: true }
+//     }).then((stream) => {
+//         console.log('streaming now...')
+//         setShareOn();
+//         const video = document.querySelector('#bottom-center-video');
+//         video.srcObject = stream;
+
+//         stream.getVideoTracks()[0].addEventListener('ended', () => {
+//             errorMsg('The user has ended screen sharing.');
+//             setShareOff();
+//         })
+//     }).catch((err) => {
+//         console.error("Error: unable to display media, " + err)
+//     })
+
+// }
+
+const setShareOn = () => {
+    const html = `
+        <i class="fas fa-laptop fa-lg" style="color:#2be028"></i>
+    `
+    shareButton.innerHTML = html;
+}
+
+const setShareOff = () => {
+    const html = `
+        <i class="fas fa-laptop fa-lg"></i>
+    `
+    shareButton.innerHTML = html;
 }
 
 function setPandO(panner, pX, pY, pZ, oX, oY, oZ){
